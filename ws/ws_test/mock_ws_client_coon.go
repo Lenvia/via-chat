@@ -9,8 +9,7 @@ import (
 	"strconv"
 )
 
-
-func start()  {
+func start() {
 	var addr = flag.String("addr", "localhost:8322", "http service address")
 
 	flag.Parse()
@@ -28,19 +27,19 @@ func start()  {
 
 	p := os.Args
 
-	log.Println("Args",p)
+	log.Println("Args", p)
 
 	d := make(map[string]interface{})
 	d["status"] = 1
 
 	// string转成int64：
-	uid, _ := strconv.ParseFloat(p[1],  64)
+	uid, _ := strconv.ParseFloat(p[1], 64)
 
 	d["data"] = map[string]interface{}{
-		"uid": uid,
-		"room_id": "1",
+		"uid":       uid,
+		"room_id":   "1",
 		"avatar_id": "4",
-		"username": "suiji"+p[1],
+		"username":  "suiji" + p[1],
 	}
 
 	c.WriteJSON(d)
@@ -56,6 +55,6 @@ func start()  {
 
 }
 
-func main()  {
+func main() {
 	start()
 }

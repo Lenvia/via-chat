@@ -34,9 +34,9 @@ func execCommand(i int) {
 	ch <- i
 	strI := strconv.Itoa(i)
 	//cmd := exec.Command("./mock_ws_client_coon.exe", strI)
-	cmd := exec.Command("E:\\go1.15.2.windows-386\\go\\bin\\go.exe",
+	cmd := exec.Command("go",
 		"run",
-		"D:\\phpstudy_pro\\WWW\\org\\public-via-chat\\ws\\ws_test\\mock_ws_client_coon.go",
+		"/Users/yy/GithubProjects/via-chat/ws/ws_test/mock_ws_client_coon.go",
 		strI)
 
 	err := cmd.Start()
@@ -44,8 +44,6 @@ func execCommand(i int) {
 	if err != nil {
 		log.Println(err)
 	}
-
-	log.Println(i)
 
 	//time.Sleep(time.Second * 1)
 	<-ch
