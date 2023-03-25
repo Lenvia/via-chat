@@ -241,7 +241,7 @@ func write() {
 				notify(cl.Conn, string(serveMsgStr))
 
 			case msgTypeGetOnlineUser:
-				// 确保同一时刻只有一个协程向客户端发送消息
+				// 无缓冲区通道 chNotify 确保同一时刻只有一个协程向客户端发送消息
 				chNotify <- 1
 				cl.Conn.WriteMessage(websocket.TextMessage, serveMsgStr)
 				<-chNotify
@@ -264,14 +264,17 @@ func handleConnClients(c *websocket.Conn) {
 
 	objColl := collection.NewObjCollection(rooms[roomIdInt])
 
+	// 使用 objColl.Reject 过滤出不是当前客户端的连接对象
 	retColl := objColl.Reject(func(item interface{}, key int) bool {
 		if item.(wsClients).Uid == clientMsg.Data.Uid {
+			// 如果已有同样的UID连接，则向该连接发送无效的错误消息，并返回 true
 			item.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(`{"status":-1,"data":[]}`))
 			return true
 		}
 		return false
 	})
 
+	// 将当前用户信息添加到 retColl 中
 	retColl.Append(wsClients{
 		Conn:       c,
 		RemoteAddr: c.RemoteAddr().String(),
@@ -283,6 +286,7 @@ func handleConnClients(c *websocket.Conn) {
 
 	interfaces, _ := retColl.ToInterfaces()
 
+	// 更新 rooms 对应房间中存储的连接对象集合
 	rooms[roomIdInt] = interfaces
 
 	//mutex.Lock()
@@ -290,7 +294,7 @@ func handleConnClients(c *websocket.Conn) {
 	//mutex.Unlock()
 }
 
-// 获取私聊的用户连接
+// findToUserCoonClient 获取私聊的用户连接
 func findToUserCoonClient() interface{} {
 	_, roomIdInt := getRoomId()
 
@@ -324,11 +328,13 @@ func notify(conn *websocket.Conn, msg string) {
 func disconnect(conn *websocket.Conn) {
 	_, roomIdInt := getRoomId()
 
+	// 创建一个通用对象集合，存储当前房间的所有连接对象
 	objColl := collection.NewObjCollection(rooms[roomIdInt])
 
+	// 过滤出需离开的连接对象
 	retColl := objColl.Reject(func(item interface{}, key int) bool {
+		// 如果当前连接的RemoteAddr和item的RemoteAddr相同，则执行对应的离线流程
 		if item.(wsClients).RemoteAddr == conn.RemoteAddr().String() {
-
 			data := msgData{
 				Username: item.(wsClients).Username,
 				Uid:      item.(wsClients).Uid,
@@ -340,18 +346,17 @@ func disconnect(conn *websocket.Conn) {
 				Data:   data,
 			}
 			serveMsgStr, _ := json.Marshal(jsonStrServeMsg)
-
 			disMsg := string(serveMsgStr)
 
+			// 关闭连接，并向整个房间的在线连接发送离线通知消息
 			item.(wsClients).Conn.Close()
-
 			notify(conn, disMsg)
-
 			return true
 		}
 		return false
 	})
 
+	// 将过滤后的连接对象重新转换为接口类型的切片，并更新 rooms 对应房间中存储的连接对象集合
 	interfaces, _ := retColl.ToInterfaces()
 	rooms[roomIdInt] = interfaces
 }
@@ -370,13 +375,14 @@ func formatServeMsgStr(status int, conn *websocket.Conn) ([]byte, msg) {
 		Time:     time.Now().UnixNano() / 1e6, // 13位  10位 => now.Unix()
 	}
 
+	// 如果消息类型是发送消息或私聊消息
 	if status == msgTypeSend || status == msgTypePrivateChat {
 		data.AvatarId = clientMsg.Data.AvatarId
 		content := clientMsg.Data.Content
 
 		data.Content = content
 		if helper.MbStrLen(content) > 800 {
-			// 直接截断
+			// 如果内容的长度超过800个字符，则将其截断
 			data.Content = string([]rune(content)[:800])
 		}
 
@@ -388,7 +394,7 @@ func formatServeMsgStr(status int, conn *websocket.Conn) ([]byte, msg) {
 		intUid, _ := strconv.Atoi(stringUid)
 
 		if clientMsg.Data.ImageUrl != "" {
-			// 存在图片
+			// 存在图片，同时保存消息的图片信息
 			models.SaveContent(map[string]interface{}{
 				"user_id":    intUid,
 				"to_user_id": toUid,
@@ -406,7 +412,7 @@ func formatServeMsgStr(status int, conn *websocket.Conn) ([]byte, msg) {
 		}
 
 	}
-
+	// 如果消息类型是获取在线用户列表
 	if status == msgTypeGetOnlineUser {
 		ro := rooms[roomIdInt]
 		data.Count = len(ro)
