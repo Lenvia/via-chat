@@ -2,18 +2,21 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
 	"via-chat/services/helper"
 	"via-chat/services/message_service"
 	"via-chat/services/user_service"
 	"via-chat/ws/primary"
-	"net/http"
-	"strconv"
 )
 
+// Index 函数用于显示应用程序的登录界面。
+// 在用户已登录的情况下，将自动跳转到应用程序的房间页面。
+// 在用户未登录的情况下，将显示登录页面，并展示当前在线用户的数量。
 func Index(c *gin.Context) {
 	// 已登录跳转room界面，多页面应该考虑放在中间件实现
 	userInfo := user_service.GetUserInfo(c)
-	if len(userInfo) > 0 {
+	if len(userInfo) > 0 { // 如果用户已经登录，则重定向到应用程序的home页面
 		c.Redirect(http.StatusFound, "/home")
 		return
 	}
@@ -50,8 +53,10 @@ func Home(c *gin.Context) {
 	})
 }
 
+// Room 函数用于显示指定房间的聊天室页面
+// roomId 为由 URL 传入的房间号参数
 func Room(c *gin.Context) {
-	roomId := c.Param("room_id")
+	roomId := c.Param("room_id") // c.Param 用于获取 RESTful 风格的路径参数，例如 http://example.com/user/123中的 123。
 
 	rooms := []string{"1", "2", "3", "4", "5", "6"}
 
@@ -59,8 +64,9 @@ func Room(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/room/1")
 		return
 	}
-
+	// 获取当前登录用户身份验证信息
 	userInfo := user_service.GetUserInfo(c)
+	// 获取指定房间中的历史聊天消息
 	msgList := message_service.GetLimitMsg(roomId, 0)
 
 	c.HTML(http.StatusOK, "room.html", gin.H{
@@ -71,9 +77,11 @@ func Room(c *gin.Context) {
 	})
 }
 
+// PrivateChat 函数用于显示两个用户之间的私聊页面
 func PrivateChat(c *gin.Context) {
 
-	roomId := c.Query("room_id")
+	// 从请求参数中读取聊天室 roomId 和聊天对象 toUid
+	roomId := c.Query("room_id") // c.Query 用于获取 GET 请求中的 URL 参数，例如 http://example.com/?key=value 中的 key 和 value。
 	toUid := c.Query("uid")
 
 	userInfo := user_service.GetUserInfo(c)
@@ -89,6 +97,8 @@ func PrivateChat(c *gin.Context) {
 	})
 }
 
+// Pagination 函数用于获取分页数据，返回 JSON 格式的数据。
+// 如果请求参数中的 room_id 不在允许列表中，则返回空数组。
 func Pagination(c *gin.Context) {
 	roomId := c.Query("room_id")
 	toUid := c.Query("uid")
@@ -110,7 +120,7 @@ func Pagination(c *gin.Context) {
 		return
 	}
 
-	msgList := []map[string]interface{}{}
+	var msgList []map[string]interface{}
 	if toUid != "" {
 		userInfo := user_service.GetUserInfo(c)
 
