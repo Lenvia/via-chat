@@ -7,7 +7,8 @@ import (
 	"time"
 )
 
-type Message struct {
+// Message TODO 可以使用 mapstructure.Decode() 函数将 map 解码为 Go 结构体，从而省略在 SaveContent() 函数中使用断言的部分。
+type Message struct { // GORM 库会自动将结构体中的驼峰式命名转换为下划线式命名。此外，可以使用 GORM 提供的 struct tag 来进行更精细的控制
 	gorm.Model
 	ID        uint
 	UserId    int
@@ -19,6 +20,7 @@ type Message struct {
 	UpdatedAt time.Time
 }
 
+// SaveContent 函数将消息内容保存到数据库中，value 参数为消息内容的 map 类型数据。
 func SaveContent(value interface{}) Message {
 	var m Message
 	m.UserId = value.(map[string]interface{})["user_id"].(int)
@@ -39,7 +41,8 @@ func SaveContent(value interface{}) Message {
 	return m
 }
 
-func GetLimitMsg(roomId string,offset int) []map[string]interface{} {
+// GetLimitMsg 函数从数据库中查询指定房间的聊天记录，roomId 参数为房间 ID，offset 参数为分页偏移量，返回值为查询结果的 map 切片。
+func GetLimitMsg(roomId string, offset int) []map[string]interface{} {
 
 	var results []map[string]interface{}
 	ChatDB.Model(&Message{}).
@@ -52,7 +55,8 @@ func GetLimitMsg(roomId string,offset int) []map[string]interface{} {
 		Limit(100).
 		Scan(&results)
 
-	if offset == 0{
+	// 如果 offset 为 0，则按照 id 升序排序
+	if offset == 0 {
 		sort.Slice(results, func(i, j int) bool {
 			return results[i]["id"].(uint32) < results[j]["id"].(uint32)
 		})
@@ -61,7 +65,7 @@ func GetLimitMsg(roomId string,offset int) []map[string]interface{} {
 	return results
 }
 
-func GetLimitPrivateMsg(uid, toUId string,offset int) []map[string]interface{} {
+func GetLimitPrivateMsg(uid, toUId string, offset int) []map[string]interface{} {
 
 	var results []map[string]interface{}
 	ChatDB.Model(&Message{}).
@@ -77,7 +81,7 @@ func GetLimitPrivateMsg(uid, toUId string,offset int) []map[string]interface{} {
 		Limit(100).
 		Scan(&results)
 
-	if offset == 0{
+	if offset == 0 {
 		sort.Slice(results, func(i, j int) bool {
 			return results[i]["id"].(uint32) < results[j]["id"].(uint32)
 		})

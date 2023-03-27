@@ -2,17 +2,17 @@ package user_service
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
 	"via-chat/models"
 	"via-chat/services/helper"
 	"via-chat/services/session"
 	"via-chat/services/validator"
-	"net/http"
-	"strconv"
 )
 
 func Login(c *gin.Context) {
 
-	username := c.PostForm("username")
+	username := c.PostForm("username") // c.PostForm用于获取携带表单数据的 POST 请求中的值。不能获取 Form-Data 或者 JSON 格式的请求体数据
 	pwd := c.PostForm("password")
 	avatarId := c.PostForm("avatar_id")
 
@@ -54,6 +54,7 @@ func Login(c *gin.Context) {
 	}
 
 	if userInfo.ID > 0 {
+		// 登录成功，将用户信息保存到会话中
 		session.SaveAuthSession(c, string(strconv.Itoa(int(userInfo.ID))))
 		c.JSON(http.StatusOK, gin.H{
 			"code": 0,
