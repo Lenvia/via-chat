@@ -1,17 +1,24 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import antd from './plugin/anti-ui'
+import axios from 'axios'
 
-import './plugin/anti-ui'
-import './plugin/http'
+import './assets/css/style.css'
 
 // 创建应用实例
 const app = createApp(App)
-antd(app)
+
+
+const Url = 'http://localhost:8008/api/v1/'
+axios.defaults.baseURL = Url
+app.config.globalProperties.$http = axios
+app.provide('Url', Url)
 
 // 挂载路由
 app.use(router)
 
+
 // 挂载应用
 app.mount('#app')
+
+export default app;
