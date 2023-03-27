@@ -56,13 +56,13 @@ export default {
         const response = await app.config.globalProperties.$http.post('/login', {
           username: formData.username,
           password: formData.password,
-          avatarId: "1",  // 临时的
+          avatar_id: "1",  // 临时的
         })
         console.log(response)
-        if (response.data.success) {
-          await router.push('/')
+        if (response.data.code === 0) {
+          await router.push('/home')
         } else {
-          ElMessage.error('登录失败，用户名或密码错误')
+          ElMessage.error('登录失败')
         }
       } catch (error) {
         console.error(error)
@@ -78,8 +78,6 @@ export default {
     }
   },
 
-  mounted() {
-  }
 }
 </script>
 
