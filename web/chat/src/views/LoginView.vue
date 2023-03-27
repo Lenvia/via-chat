@@ -58,9 +58,9 @@ export default {
           password: formData.password
         })
         if (response.data.success) {
-          // await router.push('/')
+          await router.push('/')
         } else {
-          // ElMessage.error('登录失败，用户名或密码错误')
+          ElMessage.error('登录失败，用户名或密码错误')
         }
       } catch (error) {
         console.error(error)
