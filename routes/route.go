@@ -3,16 +3,18 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"net/http"
 	"via-chat/controller"
+	"via-chat/middleware"
 	"via-chat/services/session"
 	"via-chat/static"
 	"via-chat/ws/primary"
-	"net/http"
 )
 
 func InitRoute() *gin.Engine {
 	//router := gin.Default()
 	router := gin.New()
+	router.Use(middleware.Cors())
 
 	if viper.GetString(`app.debug_mod`) == "false" {
 		// live 模式 打包用，使用嵌入式的静态资源FS

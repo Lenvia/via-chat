@@ -9,7 +9,6 @@ import (
 	"via-chat/conf"
 	"via-chat/models"
 	"via-chat/routes"
-	"via-chat/views"
 	"via-chat/ws/go_ws"
 )
 
@@ -40,7 +39,7 @@ func main() {
 	// 对于每个连接，都会为其创建一个独立的 WebSocket 连接对象，并保存到连接池中。不同的用户连接之间不会发生干扰
 	router := routes.InitRoute()
 
-	router.SetHTMLTemplate(views.GoTpl) // 加载模板文件
+	//router.SetHTMLTemplate(views.GoTpl) // 加载模板文件
 
 	go_ws.CleanOfflineConn() // 清理已离线的 WebSocket 连接
 

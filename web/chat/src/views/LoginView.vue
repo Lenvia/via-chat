@@ -41,7 +41,7 @@ export default {
       ],
       password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 8, message: '密码长度不能少于 8 位', trigger: 'blur' }
+        { min: 6, message: '密码长度不能少于 6 位', trigger: 'blur' }
       ]
     }
 
@@ -55,8 +55,10 @@ export default {
         await form.validate()
         const response = await app.config.globalProperties.$http.post('/login', {
           username: formData.username,
-          password: formData.password
+          password: formData.password,
+          avatarId: "1",  // 临时的
         })
+        console.log(response)
         if (response.data.success) {
           await router.push('/')
         } else {

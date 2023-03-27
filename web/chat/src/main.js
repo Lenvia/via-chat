@@ -9,7 +9,7 @@ import './assets/css/style.css'
 const app = createApp(App)
 
 
-const Url = 'http://localhost:8008/api/v1/'
+const Url = 'http://localhost:8322/'
 axios.defaults.baseURL = Url
 app.config.globalProperties.$http = axios
 app.provide('Url', Url)
