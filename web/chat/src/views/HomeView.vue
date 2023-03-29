@@ -14,7 +14,7 @@
       <div class="room_list">
         <el-row :gutter="20">
           <el-col v-for="room in rooms" :key="room.id" :xs="12" :sm="12" :md="8">
-            <div class="room" @click="$router.push(`/room/${room.id}`)">
+            <div class="room" @click="enterRoom(room.id)">
               <span class="num">{{ room.num }}</span>
             </div>
           </el-col>
@@ -25,8 +25,9 @@
 </template>
 
 <script>
-import { ElRow, ElCol } from "element-plus";
+import {ElRow, ElCol, ElMessage} from "element-plus";
 import app from "@/main";
+import router from "@/router";
 
 export default {
   name: "HomeView",
@@ -49,20 +50,28 @@ export default {
     async getData() {
       try {
         const res = await app.config.globalProperties.$http.get("/home");
-        console.log(res)
         if (res.status === 200) {
           const { data, user_info } = res.data;
           this.rooms = data;
           this.user_info = user_info;
-
-          console.log(this.user_info)
         }
       } catch (error) {
         console.error(error);
       }
     },
+
+    async enterRoom(room_id) {
+      const response = await app.config.globalProperties.$http.get('/room/'+room_id);
+      console.log(response)
+      if (response.status === 200) {
+        await router.push('/room')
+      } else {
+        ElMessage.error('error')
+      }
+    }
   },
-};
+}
+
 </script>
 
 <style>

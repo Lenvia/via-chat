@@ -68,8 +68,8 @@ func HasSession(c *gin.Context) bool {
 // 如果Session信息有效，则将Session中的值设置为uid，然后执行链中下一个处理程序。
 func AuthSessionMiddle() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookies := c.Request.Cookies()
-		fmt.Println(cookies)
+		//cookies := c.Request.Cookies()
+		//fmt.Println(cookies)
 
 		session := sessions.Default(c)
 		sessionValue := session.Get("uid")

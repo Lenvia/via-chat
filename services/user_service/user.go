@@ -1,7 +1,6 @@
 package user_service
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -26,8 +25,6 @@ func Login(c *gin.Context) {
 	user := models.FindUserByField("username", username)
 	userInfo := user
 	md5Pwd := helper.Md5Encrypt(pwd)
-
-	fmt.Println("\n\n\n------user.id: ", userInfo.ID)
 
 	if userInfo.ID > 0 {
 		// json 用户存在

@@ -49,8 +49,6 @@ func Home(c *gin.Context) {
 		{"id": 6, "num": primary.OnlineRoomUserCount(6)},
 	}
 
-	fmt.Println(rooms)
-
 	//c.HTML(http.StatusOK, "index.html", gin.H{
 	//	"rooms":     rooms,
 	//	"user_info": userInfo,
@@ -78,7 +76,15 @@ func Room(c *gin.Context) {
 	// 获取指定房间中的历史聊天消息
 	msgList := message_service.GetLimitMsg(roomId, 0)
 
-	c.HTML(http.StatusOK, "room.html", gin.H{
+	fmt.Println(msgList)
+
+	//c.HTML(http.StatusOK, "room.html", gin.H{
+	//	"user_info":      userInfo,
+	//	"msg_list":       msgList,
+	//	"msg_list_count": len(msgList),
+	//	"room_id":        roomId,
+	//})
+	c.JSON(http.StatusOK, gin.H{
 		"user_info":      userInfo,
 		"msg_list":       msgList,
 		"msg_list_count": len(msgList),

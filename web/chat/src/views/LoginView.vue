@@ -17,7 +17,7 @@
 <script>
 import { ref, reactive } from 'vue'
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
+import router from "@/router";
 import app from '@/main.js';
 
 export default {
@@ -46,7 +46,7 @@ export default {
     }
 
 
-    const router = useRouter()
+    // const router = useRouter()
 
     const handleSubmit = async () => {
       try {
