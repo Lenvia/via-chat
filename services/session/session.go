@@ -1,6 +1,7 @@
 package session
 
 import (
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -22,16 +23,19 @@ func SaveAuthSession(c *gin.Context, info interface{}) {
 	// 在请求上下文中创建默认Session存储器的实例
 	session := sessions.Default(c)
 	session.Set("uid", info)
+
 	// c.SetCookie("user_id",string(info.(map[string]interface{})["b"].(uint)), 1000, "/", "localhost", false, true)
-	session.Save() // 将session的更改保存到底层存储
+	err := session.Save()
+	if err != nil {
+		fmt.Println(err)
+	} // 将session的更改保存到底层存储
+
 }
 
 // GetSessionUserInfo 函数用于从Session中检索用户信息，以便进行验证或处理用户请求
 func GetSessionUserInfo(c *gin.Context) map[string]interface{} {
 	session := sessions.Default(c)
-
 	uid := session.Get("uid")
-
 	data := make(map[string]interface{})
 	// 如果Session中存在用户ID
 	if uid != nil { // 使用此ID检索用户信息，例如：ID，用户名和头像编号
@@ -64,6 +68,9 @@ func HasSession(c *gin.Context) bool {
 // 如果Session信息有效，则将Session中的值设置为uid，然后执行链中下一个处理程序。
 func AuthSessionMiddle() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		cookies := c.Request.Cookies()
+		fmt.Println(cookies)
+
 		session := sessions.Default(c)
 		sessionValue := session.Get("uid")
 		if sessionValue == nil {

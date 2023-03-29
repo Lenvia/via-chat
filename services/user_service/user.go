@@ -1,6 +1,7 @@
 package user_service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -11,25 +12,22 @@ import (
 )
 
 func Login(c *gin.Context) {
-
-	username := c.PostForm("username") // c.PostForm用于获取携带表单数据的 POST 请求中的值。不能获取 Form-Data 或者 JSON 格式的请求体数据
-	pwd := c.PostForm("password")
-	avatarId := c.PostForm("avatar_id")
-
 	var u validator.User
-
-	u.Username = username
-	u.Password = pwd
-	u.AvatarId = avatarId
 
 	if err := c.ShouldBind(&u); err != nil {
 		c.JSON(http.StatusOK, gin.H{"code": 5000, "msg": err.Error()})
 		return
 	}
 
+	username := u.Username
+	pwd := u.Password
+	avatarId := u.AvatarId
+
 	user := models.FindUserByField("username", username)
 	userInfo := user
 	md5Pwd := helper.Md5Encrypt(pwd)
+
+	fmt.Println("\n\n\n------user.id: ", userInfo.ID)
 
 	if userInfo.ID > 0 {
 		// json 用户存在
@@ -55,10 +53,11 @@ func Login(c *gin.Context) {
 
 	if userInfo.ID > 0 {
 		// 登录成功，将用户信息保存到会话中
-		session.SaveAuthSession(c, string(strconv.Itoa(int(userInfo.ID))))
+		session.SaveAuthSession(c, strconv.Itoa(int(userInfo.ID)))
 		c.JSON(http.StatusOK, gin.H{
 			"code": 0,
 		})
+		// 到这里session是有值的
 		return
 	} else {
 		c.JSON(http.StatusOK, gin.H{

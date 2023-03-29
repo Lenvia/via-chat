@@ -22,5 +22,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+// router 前置守卫
+// router.beforeEach((to, from, next) => {
+//   const userToken = window.sessionStorage.getItem('token')
+//   if (to.path === '/login') return next()
+//   if (!userToken) {
+//     next('/login')
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

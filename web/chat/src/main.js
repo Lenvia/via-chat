@@ -12,6 +12,7 @@ const app = createApp(App)
 const Url = 'http://localhost:8322/'
 axios.defaults.baseURL = Url
 app.config.globalProperties.$http = axios
+app.config.globalProperties.$http.defaults.withCredentials = true
 app.provide('Url', Url)
 
 // 挂载路由

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -22,10 +23,10 @@ func Index(c *gin.Context) {
 	}
 
 	OnlineUserCount := primary.OnlineUserCount()
-
 	c.HTML(http.StatusOK, "login.html", gin.H{
 		"OnlineUserCount": OnlineUserCount,
 	})
+	//c.Abort()
 }
 
 func Login(c *gin.Context) {
@@ -38,6 +39,7 @@ func Logout(c *gin.Context) {
 
 func Home(c *gin.Context) {
 	userInfo := user_service.GetUserInfo(c)
+
 	rooms := []map[string]interface{}{
 		{"id": 1, "num": primary.OnlineRoomUserCount(1)},
 		{"id": 2, "num": primary.OnlineRoomUserCount(2)},
@@ -47,8 +49,15 @@ func Home(c *gin.Context) {
 		{"id": 6, "num": primary.OnlineRoomUserCount(6)},
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"rooms":     rooms,
+	fmt.Println(rooms)
+
+	//c.HTML(http.StatusOK, "index.html", gin.H{
+	//	"rooms":     rooms,
+	//	"user_info": userInfo,
+	//})
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":      rooms,
 		"user_info": userInfo,
 	})
 }

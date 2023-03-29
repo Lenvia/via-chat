@@ -58,7 +58,7 @@ export default {
           password: formData.password,
           avatar_id: "1",  // 临时的
         })
-        console.log(response)
+
         if (response.data.code === 0) {
           await router.push('/home')
         } else {
