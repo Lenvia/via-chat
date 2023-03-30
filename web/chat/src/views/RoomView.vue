@@ -15,24 +15,42 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue';
+import {defineComponent, ref, onMounted, watch} from 'vue';
+import app from "@/main";
+import {ElMessage} from "element-plus";
+import router from "@/router";
 
 export default defineComponent({
   name: 'RoomView',
   setup() {
-    const room_id = 1; // 你的房间ID
     const userInfo = ref({ uid: '', username: '', avatar_id: '' });
     const msgList = ref([]);
     const msgListCount = ref(0);
+    const room_id = router.currentRoute.value.params.room_id;
+
+
+    // 监听 $route 变化
+    // watch(router, (to, from) => {
+    //   if (to.params.room_id !== roomId.value) {
+    //     roomId.value = to.params.room_id;
+    //     // TODO: 根据 roomId 获取房间信息以及聊天记录等
+    //     console.log(roomId.value)
+    //   }
+    // });
 
     async function loadData() {
-      const res = await fetch(`/api/chat/${room_id}`);
-      const data = await res.json();
-      userInfo.value = data.user_info;
-      msgList.value = data.msg_list;
-      msgListCount.value = data.msg_list_count;
+      console.log("room_id:" + room_id);
+      const response = await app.config.globalProperties.$http.get('/room/'+room_id);
+      console.log(response);
+      // if (response.status === 200) {
+      //   const data = await response.data;
+      //   userInfo.value = data.user_info;
+      //   msgList.value = data.msg_list;
+      //   msgListCount.value = data.msg_list_count;
+      // } else {
+      //   ElMessage.error('error')
+      // }
     }
-
     onMounted(() => {
       loadData();
     });

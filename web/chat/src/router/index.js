@@ -17,7 +17,7 @@ const routes = [
     component: Home
   },
   {
-    path: '/room',
+    path: '/room/:room_id',
     name: 'room',
     component: Room
   }

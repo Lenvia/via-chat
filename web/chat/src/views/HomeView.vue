@@ -61,13 +61,13 @@ export default {
     },
 
     async enterRoom(room_id) {
-      const response = await app.config.globalProperties.$http.get('/room/'+room_id);
-      console.log(response)
-      if (response.status === 200) {
-        await router.push('/room')
-      } else {
-        ElMessage.error('error')
-      }
+      console.log(room_id);
+      await router.push({
+        name: 'room',
+        params: {
+          room_id,
+        },
+      })
     }
   },
 }

@@ -68,8 +68,9 @@ func Room(c *gin.Context) {
 	rooms := []string{"1", "2", "3", "4", "5", "6"}
 
 	if !helper.InArray(roomId, rooms) {
-		c.Redirect(http.StatusFound, "/room/1")
-		return
+		//c.Redirect(http.StatusFound, "/room/1")
+		//return
+		roomId = "1"
 	}
 	// 获取当前登录用户身份验证信息
 	userInfo := user_service.GetUserInfo(c)
