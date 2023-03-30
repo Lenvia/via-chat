@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -77,7 +76,7 @@ func Room(c *gin.Context) {
 	// 获取指定房间中的历史聊天消息
 	msgList := message_service.GetLimitMsg(roomId, 0)
 
-	fmt.Println(msgList)
+	//fmt.Println(msgList)
 
 	//c.HTML(http.StatusOK, "room.html", gin.H{
 	//	"user_info":      userInfo,

@@ -2,6 +2,7 @@ package go_ws
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/jianfengye/collection"
@@ -28,22 +29,22 @@ type wsClients struct {
 
 // msgData 结构体定义了消息体的数据结构
 type msgData struct {
-	Uid      string        // 发送者 uid
-	Username string        // 发送者用户名
-	AvatarId string        // 发送者头像 id
-	ToUid    string        // 接收者 uid
-	Content  string        // 消息内容
-	ImageUrl string        // 图片地址
-	RoomId   string        // 房间 id
-	Count    int           // 房间人数
+	Uid      string        `json:"uid"`       // 发送者 uid
+	Username string        `json:"username"`  // 发送者用户名
+	AvatarId string        `json:"avatar_id"` // 发送者头像 id
+	ToUid    string        `json:"to_id"`     // 接收者 uid
+	Content  string        `json:"content"`   // 消息内容
+	ImageUrl string        `json:"image_url"` // 图片地址
+	RoomId   string        `json:"room_id"`   // 房间 id
+	Count    int           `json:"count"`     // 房间人数
 	List     []interface{} // 房间中其他客户端信息
 	Time     int64         // 消息发送时间
 }
 
 // msg 结构体定义了 WebSocket 消息体
 type msg struct {
-	Status int             // 消息状态码
-	Data   msgData         // 消息体数据
+	Status int             `json:"status"` // 消息状态码
+	Data   msgData         `json:"data"`   // 消息体数据
 	Conn   *websocket.Conn // 对应的客户端连接对象
 }
 
@@ -195,11 +196,12 @@ func read(c *websocket.Conn) {
 		}
 
 		json.Unmarshal(message, &clientMsg)
-		//fmt.Println("来自客户端的消息", clientMsg, c.RemoteAddr())
+		fmt.Println("来自客户端的消息", clientMsg, c.RemoteAddr())
 		if clientMsg.Data.Uid != "" { // 已经登录过的用户
+
 			if clientMsg.Status == msgTypeOnline { // 进入房间，建立连接
 				roomId, _ := getRoomId()
-
+				fmt.Println("room_id: ", roomId)
 				enterRooms <- wsClients{
 					Conn:       c,
 					RemoteAddr: c.RemoteAddr().String(),
@@ -212,6 +214,7 @@ func read(c *websocket.Conn) {
 
 			// 根据客户端发送的消息类型，将其转化为需要发送给其他客户端的服务端消息，并添加到消息队列中，等待发送
 			_, serveMsg := formatServeMsgStr(clientMsg.Status, c)
+			fmt.Println(serveMsg)
 			sMsg <- serveMsg
 		}
 	}
@@ -234,6 +237,7 @@ func write() {
 			handleConnClients(r.Conn)
 		// 如果从 sMsg 通道中获取到一个服务端消息，则将其转化为需要发送给客户端的 JSON 字符串，并根据不同的消息类型进行相应的处理
 		case cl := <-sMsg:
+			fmt.Println("即将发送消息：", cl)
 			serveMsgStr, _ := json.Marshal(cl)
 			switch cl.Status {
 			// 如果是在线消息或者发送消息，则向所有的客户端发送该消息
@@ -315,12 +319,15 @@ func notify(conn *websocket.Conn, msg string) {
 	chNotify <- 1 // 利用channel阻塞 避免并发去对同一个连接发送消息出现panic: concurrent write to websocket connection这样的异常
 	_, roomIdInt := getRoomId()
 	assignRoom := rooms[roomIdInt]
+	fmt.Println("将要广播的房间号为：", roomIdInt)
 	// 遍历该房间中所有的客户端连接对象，并向除了当前连接对象之外的其它客户端连接对象发送消息
 	for _, con := range assignRoom {
+		fmt.Println(conn.RemoteAddr().String())
 		if con.(wsClients).RemoteAddr != conn.RemoteAddr().String() {
 			con.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))
 		}
 	}
+	fmt.Println("发送成功")
 	<-chNotify
 }
 

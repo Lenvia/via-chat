@@ -38,7 +38,7 @@ export default {
   data() {
     return {
       user_info:{
-        username:null,
+        username: null,
       },
       rooms: [],
     };
