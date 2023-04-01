@@ -89,11 +89,11 @@ export default defineComponent({
         ws.onmessage = function (evt) {
           console.log("收到服务端的消息：", evt)
           let received_msg = JSON.parse(evt.data);
-          console.log(received_msg);
+          // console.log(received_msg);
 
-          // let myDate = new Date();
-          // let time = myDate.toLocaleDateString() + myDate.toLocaleTimeString()
-          //console.log("数据已接收...", received_msg);
+          let myDate = new Date();
+          let time = myDate.toLocaleDateString() + myDate.toLocaleTimeString()
+          console.log("数据已接收...", received_msg);
         };
 
         ws.onclose = function () {
