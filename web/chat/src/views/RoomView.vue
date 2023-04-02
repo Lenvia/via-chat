@@ -5,7 +5,7 @@
 <!--      <li>User Name: {{ userInfo.username }}</li>-->
 <!--      <li>User Avatar ID: {{ userInfo.avatar_id }}</li>-->
 <!--    </ul>-->
-    <div class="chat-messages">
+    <div class="chat-messages" ref="msgContainer">
       <div v-for="msg in msgList" :key="msg.id" :class="getMessageClass(msg)">
         <div>{{ msg.content }}</div>
         <div class="message-info">
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, watch} from 'vue';
+import {defineComponent, ref, onMounted, nextTick} from 'vue';
 import app from "@/main";
 import {ElMessage} from "element-plus";
 import router from "@/router";
@@ -30,6 +30,8 @@ export default defineComponent({
     const msgList = ref([]);
     const msgListCount = ref(0);
     const room_id = router.currentRoute.value.params.room_id;
+    const msgContainer = ref(null);
+
 
 
 
@@ -41,6 +43,7 @@ export default defineComponent({
         const data = await response.data;
         userInfo.value = data.user_info;
         msgList.value = data.msg_list;
+        console.log(msgList.value)
         msgListCount.value = data.msg_list_count;
         
         console.log(userInfo.value);
@@ -49,23 +52,22 @@ export default defineComponent({
       } else {
         ElMessage.error('error')
       }
+
+      // 等待DOM更新并滚动到底部
+      nextTick(() => {
+        msgContainer.value.scrollTop = msgContainer.value.scrollHeight;
+      });
     }
     onMounted(() => {
       loadHistoryAndBuildWS();
-      
     });
 
     function WebSocketConnect(userInfo, room_id, toUserInfo = null) {
       if ("WebSocket" in window) {
-        //console.log("您的浏览器支持 WebSocket!");
-
         if (userInfo.uid <= 0) {
           alert('参数错误，请刷新页面重试');
           return false;
         }
-
-        // 打开一个 web socket
-        // let ws = new WebSocket("ws://127.0.0.1:8322/ws");
 
         let send_data = JSON.stringify({
           "status": toUserInfo ? 5 : 1,
@@ -87,13 +89,24 @@ export default defineComponent({
         };
 
         ws.onmessage = function (evt) {
-          console.log("收到服务端的消息：", evt)
+          // console.log(evt)
           let received_msg = JSON.parse(evt.data);
-          // console.log(received_msg);
+          console.log("数据已接收...", received_msg);
 
           let myDate = new Date();
-          let time = myDate.toLocaleDateString() + myDate.toLocaleTimeString()
-          console.log("数据已接收...", received_msg);
+          let time = myDate.toLocaleDateString() + " " + myDate.toLocaleTimeString()
+
+
+          let systemInfo;
+          switch (received_msg.status) {
+            case 1:
+              systemInfo =`<li class="systeminfo"><span>`
+                  +`【` + received_msg.data.username + `】` + time + " 加入了房间" +`</span></li>`;
+              msgContainer.value.innerHTML += systemInfo;
+          }
+          nextTick(() => {
+            msgContainer.value.scrollTop = msgContainer.value.scrollHeight;
+          });
         };
 
         ws.onclose = function () {
@@ -132,6 +145,7 @@ export default defineComponent({
       userInfo,
       msgList,
       msgListCount,
+      msgContainer,
       getUsername,
       getMessageClass,
     };
