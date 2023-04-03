@@ -14,6 +14,12 @@
         </div>
       </div>
     </div>
+
+    <div class="textarea-wrapper">
+      <textarea class="chat-input"></textarea>
+      <button class="send-button"></button>
+    </div>
+
   </div>
 </template>
 
@@ -83,9 +89,8 @@ export default defineComponent({
         const ws = new WebSocket(`ws://localhost:8322/ws`); // 连接 WebSocket
 
         ws.onopen = function () {
-          console.log(send_data);
           ws.send(send_data);
-          //console.log("send_data 发送数据", send_data)
+          console.log("send_data 发送数据", send_data)
         };
 
         ws.onmessage = function (evt) {
@@ -103,15 +108,30 @@ export default defineComponent({
               systemInfo =`<li class="systeminfo"><span>`
                   +`【` + received_msg.data.username + `】` + time + " 加入了房间" +`</span></li>`;
               msgContainer.value.innerHTML += systemInfo;
+              break;
+            case 2:
+              systemInfo =`<li class="systeminfo"><span>`
+                  +`【` + received_msg.data.username + `】` + time + " 离开了房间" +`</span></li>`;
+              msgContainer.value.innerHTML += systemInfo;
+              break;
+            case -1:
+              ws.close() // 主动close掉
+              console.log("client 连接已关闭...");
+              break;
           }
+
           nextTick(() => {
             msgContainer.value.scrollTop = msgContainer.value.scrollHeight;
           });
         };
 
         ws.onclose = function () {
-          console.log("serve 连接已关闭... ");
-          // console.log(c);
+          let systemInfo;
+          systemInfo =`<li class="systeminfo"><span>`
+              +"与服务器连接断开，请刷新页面重试" +`</span></li>`;
+          let myDate = new Date();
+          let time = myDate.toLocaleDateString() + " " + myDate.toLocaleTimeString()
+          console.log("serve 连接已关闭... " + time);
         };
 
         ws.onerror = function (evt) {
@@ -160,9 +180,11 @@ export default defineComponent({
 
 .chat-messages {
   position: absolute;
+  top: 5%;
   left: 50%;
   width: 50%;
-  height: calc(100% - 50px);
+  height: calc(85% - 50px);
+  border: 1px solid #ccc;
   overflow-y: auto;
   transform: translate(-50%, 0);
 }
@@ -197,4 +219,36 @@ export default defineComponent({
 .message-time {
   color: #999;
 }
+
+.textarea-wrapper {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  width: 50%;
+  transform: translate(-50%, 0);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.send-button {
+  width: 50px;
+  height: 50px;
+  margin-left: 10px;
+  /*background-image: url('send-button-icon.png');*/
+  background-size: cover;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
 </style>
