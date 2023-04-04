@@ -59,7 +59,7 @@ export default defineComponent({
             "username": userInfo.value.username,
             "to_user": null,
             "content": content,
-            "to_uid": null,
+            "to_uid": 0,
           }
         })
         console.log("send_data", send_data)
@@ -136,6 +136,7 @@ export default defineComponent({
 
 
           let systemInfo;
+          let newMsg;
           switch (received_msg.status) {
             case 1:
               systemInfo =`<li class="systeminfo"><span>`
@@ -148,7 +149,20 @@ export default defineComponent({
               msgContainer.value.innerHTML += systemInfo;
               break;
             case 3:
-              msgList.value.push(received_msg.data);
+              // 因为不是重新请求整个msgList，所以需要做一些小小的转换
+                console.log(received_msg.data);
+              newMsg = {
+                "avatar_id": received_msg.data.avatar_id,
+                "content": received_msg.data.content,
+                "created_at": received_msg.data.created_at,
+                "id": received_msg.data.id,
+                "image_url": received_msg.data.image_url,
+                "room_id": parseInt(received_msg.data.room_id),
+                "to_user_id": received_msg.data.to_uid,
+                "user_id": parseInt(received_msg.data.uid),
+                "username": received_msg.data.username,
+              };
+              msgList.value.push(newMsg);
               console.log(msgList.value);
               break;
             case -1:

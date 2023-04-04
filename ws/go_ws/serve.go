@@ -32,13 +32,17 @@ type msgData struct {
 	Uid      string        `json:"uid"`       // 发送者 uid
 	Username string        `json:"username"`  // 发送者用户名
 	AvatarId string        `json:"avatar_id"` // 发送者头像 id
-	ToUid    string        `json:"to_id"`     // 接收者 uid
+	ToUid    string        `json:"to_uid"`    // 接收者 uid
 	Content  string        `json:"content"`   // 消息内容
 	ImageUrl string        `json:"image_url"` // 图片地址
 	RoomId   string        `json:"room_id"`   // 房间 id
 	Count    int           `json:"count"`     // 房间人数
 	List     []interface{} // 房间中其他客户端信息
 	Time     int64         // 消息发送时间
+	// 下面是数据库额外附加信息，兼容一下
+	ID        uint      `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // msg 结构体定义了 WebSocket 消息体
@@ -395,14 +399,16 @@ func formatServeMsgStr(status int, conn *websocket.Conn) ([]byte, msg) {
 
 		toUidStr := clientMsg.Data.ToUid
 		toUid, _ := strconv.Atoi(toUidStr)
+		data.ToUid = toUidStr
 
 		// 保存消息
 		stringUid := data.Uid
 		intUid, _ := strconv.Atoi(stringUid)
 
+		var msg models.Message
 		if clientMsg.Data.ImageUrl != "" {
 			// 存在图片，同时保存消息的图片信息
-			models.SaveContent(map[string]interface{}{
+			msg = models.SaveContent(map[string]interface{}{
 				"user_id":    intUid,
 				"to_user_id": toUid,
 				"content":    data.Content,
@@ -410,13 +416,17 @@ func formatServeMsgStr(status int, conn *websocket.Conn) ([]byte, msg) {
 				"image_url":  clientMsg.Data.ImageUrl,
 			})
 		} else {
-			models.SaveContent(map[string]interface{}{
+			msg = models.SaveContent(map[string]interface{}{
 				"user_id":    intUid,
 				"to_user_id": toUid,
 				"content":    data.Content,
 				"room_id":    data.RoomId,
 			})
 		}
+		// 创建时间封装进去，发送回客户端
+		data.CreatedAt = msg.CreatedAt
+		data.UpdatedAt = msg.UpdatedAt
+		data.ID = msg.ID
 
 	}
 	// 如果消息类型是获取在线用户列表
