@@ -205,7 +205,6 @@ func read(c *websocket.Conn) {
 
 			if clientMsg.Status == msgTypeOnline { // 进入房间，建立连接
 				roomId, _ := getRoomId()
-				fmt.Println("room_id: ", roomId)
 				enterRooms <- wsClients{
 					Conn:       c,
 					RemoteAddr: c.RemoteAddr().String(),
@@ -218,7 +217,6 @@ func read(c *websocket.Conn) {
 
 			// 根据客户端发送的消息类型，将其转化为需要发送给其他客户端的服务端消息，并添加到消息队列中，等待发送
 			_, serveMsg := formatServeMsgStr(clientMsg.Status, c)
-			fmt.Println(serveMsg)
 			sMsg <- serveMsg
 		}
 	}
@@ -246,7 +244,7 @@ func write() {
 			switch cl.Status {
 			// 如果是在线消息或者发送消息，则向所有的客户端发送该消息
 			case msgTypeOnline, msgTypeSend:
-				notify(cl.Conn, string(serveMsgStr))
+				notify(cl.Conn, string(serveMsgStr)) // 发送者，发送消息
 
 			case msgTypeGetOnlineUser:
 				// 无缓冲区通道 chNotify 确保同一时刻只有一个协程向客户端发送消息
@@ -273,6 +271,7 @@ func handleConnClients(c *websocket.Conn) {
 	objColl := collection.NewObjCollection(rooms[roomIdInt])
 
 	// 使用 objColl.Reject 过滤出不是当前客户端的连接对象
+	// 最终结果返回的是一个不包含已有同样 UID 连接的连接集合。
 	retColl := objColl.Reject(func(item interface{}, key int) bool {
 		if item.(wsClients).Uid == clientMsg.Data.Uid {
 			// 如果已有同样的UID连接，则向该连接发送无效的错误消息，并返回 true
@@ -296,6 +295,8 @@ func handleConnClients(c *websocket.Conn) {
 
 	// 更新 rooms 对应房间中存储的连接对象集合
 	rooms[roomIdInt] = interfaces
+
+	fmt.Println(rooms[roomIdInt])
 
 	//mutex.Lock()
 
@@ -325,10 +326,11 @@ func notify(conn *websocket.Conn, msg string) {
 	assignRoom := rooms[roomIdInt]
 	fmt.Println("将要广播的房间号为：", roomIdInt)
 	// 遍历该房间中所有的客户端连接对象，并向除了当前连接对象之外的其它客户端连接对象发送消息
-	for _, con := range assignRoom {
-		fmt.Println(conn.RemoteAddr().String())
+	fmt.Println("当前房间的连接：", assignRoom)
+	for _, client := range assignRoom {
+		fmt.Println(client.(wsClients).RemoteAddr)
 		//if con.(wsClients).RemoteAddr != conn.RemoteAddr().String() {
-		con.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))
+		client.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))
 		//}
 	}
 	fmt.Println("发送成功")
@@ -397,9 +399,9 @@ func formatServeMsgStr(status int, conn *websocket.Conn) ([]byte, msg) {
 			data.Content = string([]rune(content)[:800])
 		}
 
+		data.ToUid = clientMsg.Data.ToUid
 		toUidStr := clientMsg.Data.ToUid
 		toUid, _ := strconv.Atoi(toUidStr)
-		data.ToUid = toUidStr
 
 		// 保存消息
 		stringUid := data.Uid

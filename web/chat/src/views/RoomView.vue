@@ -1,16 +1,11 @@
 <template>
   <div class="chat-room">
-<!--    <ul class="user-info">-->
-<!--      <li>User ID: {{ userInfo.uid }}</li>-->
-<!--      <li>User Name: {{ userInfo.username }}</li>-->
-<!--      <li>User Avatar ID: {{ userInfo.avatar_id }}</li>-->
-<!--    </ul>-->
     <div class="chat-messages" ref="msgContainer">
-      <div v-for="msg in msgList" :key="msg.id" :class="getMessageClass(msg)">
+      <div v-for="msg in msgList" :key="msg.id" :class="msg.type === 'system' ? 'system-info' : getMessageClass(msg)">
         <div>{{ msg.content }}</div>
-        <div class="message-info">
+        <div class="message-info" v-if="msg.type !== 'system'">
           <div class="message-sender">{{ getUsername(msg) }}</div>
-<!--          <div class="message-time">{{ formatTime(msg.CreatedAt) }}</div>-->
+          <!--<div class="message-time">{{ formatTime(msg.CreatedAt) }}</div>-->
         </div>
       </div>
     </div>
@@ -24,7 +19,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, nextTick} from 'vue';
+import {defineComponent, ref, onMounted, nextTick, watch} from 'vue';
 import app from "@/main";
 import {ElMessage} from "element-plus";
 import router from "@/router";
@@ -59,7 +54,7 @@ export default defineComponent({
             "username": userInfo.value.username,
             "to_user": null,
             "content": content,
-            "to_uid": 0,
+            "to_uid": "0",
           }
         })
         console.log("send_data", send_data)
@@ -119,7 +114,7 @@ export default defineComponent({
           }
         })
 
-        ws   = new WebSocket(`ws://localhost:8322/ws`); // 连接 WebSocket
+        ws = new WebSocket(`ws://localhost:8322/ws`); // 连接 WebSocket
 
         ws.onopen = function () {
           ws.send(send_data);
@@ -129,7 +124,7 @@ export default defineComponent({
         ws.onmessage = function (evt) {
           // console.log(evt)
           let received_msg = JSON.parse(evt.data);
-          console.log("数据已接收...", received_msg);
+          // console.log("数据已接收...", received_msg);
 
           let myDate = new Date();
           let time = myDate.toLocaleDateString() + " " + myDate.toLocaleTimeString()
@@ -138,19 +133,26 @@ export default defineComponent({
           let systemInfo;
           let newMsg;
           switch (received_msg.status) {
+            // WARNING:
+            // 对于case 1， 2 不要使用 msgContainer.value.innerHTML 直接操作 DOM！！！
+            // 而是通过响应式数据来更新 DOM 可以在这些消息中添加一个额外的属性，例如 type，用于区分普通消息和系统消息。
+            // 然后根据此属性在模板中使用不同的样式和显示方式。
             case 1:
-              systemInfo =`<li class="systeminfo"><span>`
-                  +`【` + received_msg.data.username + `】` + time + " 加入了房间" +`</span></li>`;
-              msgContainer.value.innerHTML += systemInfo;
+              newMsg = {
+                type: 'system',
+                content: `【${received_msg.data.username}】${time} 加入了房间`,
+              };
+              msgList.value.push(newMsg);
               break;
             case 2:
-              systemInfo =`<li class="systeminfo"><span>`
-                  +`【` + received_msg.data.username + `】` + time + " 离开了房间" +`</span></li>`;
-              msgContainer.value.innerHTML += systemInfo;
+              newMsg = {
+                type: 'system',
+                content: `【${received_msg.data.username}】${time} 离开了房间`,
+              };
+              msgList.value.push(newMsg);
               break;
             case 3:
               // 因为不是重新请求整个msgList，所以需要做一些小小的转换
-                console.log(received_msg.data);
               newMsg = {
                 "avatar_id": received_msg.data.avatar_id,
                 "content": received_msg.data.content,
@@ -158,12 +160,11 @@ export default defineComponent({
                 "id": received_msg.data.id,
                 "image_url": received_msg.data.image_url,
                 "room_id": parseInt(received_msg.data.room_id),
-                "to_user_id": received_msg.data.to_uid,
+                "to_user_id": parseInt(received_msg.data.to_uid),
                 "user_id": parseInt(received_msg.data.uid),
                 "username": received_msg.data.username,
               };
               msgList.value.push(newMsg);
-              console.log(msgList.value);
               break;
             case -1:
               ws.close() // 主动close掉
@@ -193,7 +194,7 @@ export default defineComponent({
 
     // Get the sender username for a message
     function getUsername(message) {
-      if (message.user_id === userInfo.value.uid) {
+      if (message.user_id === parseInt(userInfo.value.uid)) {
         return 'You';
       }
       return message.user_id;
@@ -201,7 +202,7 @@ export default defineComponent({
 
     // Get the class for a message element (based on whether it is from the current user or not)
     function getMessageClass(message) {
-      if (message.user_id === userInfo.value.uid) {
+      if (message.user_id === parseInt(userInfo.value.uid)) {
         return 'message-sent';
       }
       return 'message-received';
