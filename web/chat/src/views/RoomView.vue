@@ -16,8 +16,8 @@
     </div>
 
     <div class="textarea-wrapper">
-      <textarea class="chat-input"></textarea>
-      <button class="send-button"></button>
+      <textarea class="chat-input" ref="sendContent"></textarea>
+      <button class="send-button" ref="sendButton">Send</button>
     </div>
 
   </div>
@@ -32,11 +32,42 @@ import router from "@/router";
 export default defineComponent({
   name: 'RoomView',
   setup() {
+    var ws;
     const userInfo = ref({ uid: '', username: '', avatar_id: '' });
     const msgList = ref([]);
     const msgListCount = ref(0);
     const room_id = router.currentRoute.value.params.room_id;
     const msgContainer = ref(null);
+    const sendButton = ref(null);
+    const sendContent = ref(null);
+
+    const handleClick = () => {
+      // 获取 textarea 内容
+      const content = sendContent.value.value;
+
+      // 在这里执行发送消息的逻辑
+      if (content !== '') {
+        let myDate = new Date();
+        let time = myDate.toLocaleDateString() + myDate.toLocaleTimeString();
+
+        let send_data = JSON.stringify({
+          "status": 3,
+          "data": {
+            "uid": userInfo.value.uid.toString(),
+            "room_id": room_id,
+            "avatar_id": userInfo.value.avatar_id,
+            "username": userInfo.value.username,
+            "to_user": null,
+            "content": content,
+            "to_uid": null,
+          }
+        })
+        console.log("send_data", send_data)
+        ws.send(send_data);
+      }
+      // 清空输入框
+      sendContent.value.value = '';
+    };
 
 
 
@@ -44,15 +75,14 @@ export default defineComponent({
     // 获取历史消息
     async function loadHistoryAndBuildWS() {
       const response = await app.config.globalProperties.$http.get('/room/'+room_id);
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         const data = await response.data;
         userInfo.value = data.user_info;
         msgList.value = data.msg_list;
-        console.log(msgList.value)
         msgListCount.value = data.msg_list_count;
         
-        console.log(userInfo.value);
+        // console.log(userInfo.value);
         WebSocketConnect(userInfo.value, room_id)
         
       } else {
@@ -65,11 +95,14 @@ export default defineComponent({
       });
     }
     onMounted(() => {
+
+
       loadHistoryAndBuildWS();
+      sendButton.value.addEventListener('click', handleClick); // 绑定按钮的点击事件
     });
 
     function WebSocketConnect(userInfo, room_id, toUserInfo = null) {
-      if ("WebSocket" in window) {
+
         if (userInfo.uid <= 0) {
           alert('参数错误，请刷新页面重试');
           return false;
@@ -86,7 +119,7 @@ export default defineComponent({
           }
         })
 
-        const ws = new WebSocket(`ws://localhost:8322/ws`); // 连接 WebSocket
+        ws   = new WebSocket(`ws://localhost:8322/ws`); // 连接 WebSocket
 
         ws.onopen = function () {
           ws.send(send_data);
@@ -114,6 +147,10 @@ export default defineComponent({
                   +`【` + received_msg.data.username + `】` + time + " 离开了房间" +`</span></li>`;
               msgContainer.value.innerHTML += systemInfo;
               break;
+            case 3:
+              msgList.value.push(received_msg.data);
+              console.log(msgList.value);
+              break;
             case -1:
               ws.close() // 主动close掉
               console.log("client 连接已关闭...");
@@ -138,11 +175,6 @@ export default defineComponent({
           ws.close()
           console.log("触发 onerror", evt)
         }
-
-      } else {
-        // 浏览器不支持 WebSocket
-        alert("您的浏览器不支持 WebSocket!");
-      }
     }
 
     // Get the sender username for a message
@@ -166,6 +198,8 @@ export default defineComponent({
       msgList,
       msgListCount,
       msgContainer,
+      sendButton,
+      sendContent,
       getUsername,
       getMessageClass,
     };

@@ -323,9 +323,9 @@ func notify(conn *websocket.Conn, msg string) {
 	// 遍历该房间中所有的客户端连接对象，并向除了当前连接对象之外的其它客户端连接对象发送消息
 	for _, con := range assignRoom {
 		fmt.Println(conn.RemoteAddr().String())
-		if con.(wsClients).RemoteAddr != conn.RemoteAddr().String() {
-			con.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))
-		}
+		//if con.(wsClients).RemoteAddr != conn.RemoteAddr().String() {
+		con.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))
+		//}
 	}
 	fmt.Println("发送成功")
 	<-chNotify
