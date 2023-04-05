@@ -10,7 +10,6 @@ import (
 // 定义 serve 的映射关系
 var serveMap = map[string]ws.ServeInterface{
 	// Serve 和 GoServe，它们是实现了相同接口的不同类，能够根据用户的配置文件，选择合适的 ws.ServeInterface 实例
-	"Serve":   &ws.Serve{},
 	"GoServe": &go_ws.GoServe{},
 }
 

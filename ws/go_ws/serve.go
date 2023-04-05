@@ -296,8 +296,6 @@ func handleConnClients(c *websocket.Conn) {
 	// 更新 rooms 对应房间中存储的连接对象集合
 	rooms[roomIdInt] = interfaces
 
-	fmt.Println(rooms[roomIdInt])
-
 	//mutex.Lock()
 
 	//mutex.Unlock()
@@ -324,16 +322,15 @@ func notify(conn *websocket.Conn, msg string) {
 	chNotify <- 1 // 利用channel阻塞 避免并发去对同一个连接发送消息出现panic: concurrent write to websocket connection这样的异常
 	_, roomIdInt := getRoomId()
 	assignRoom := rooms[roomIdInt]
-	fmt.Println("将要广播的房间号为：", roomIdInt)
+	//fmt.Println("将要广播的房间号为：", roomIdInt)
 	// 遍历该房间中所有的客户端连接对象，并向除了当前连接对象之外的其它客户端连接对象发送消息
 	fmt.Println("当前房间的连接：", assignRoom)
 	for _, client := range assignRoom {
 		fmt.Println(client.(wsClients).RemoteAddr)
-		//if con.(wsClients).RemoteAddr != conn.RemoteAddr().String() {
 		client.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))
-		//}
 	}
 	fmt.Println("发送成功")
+	fmt.Println()
 	<-chNotify
 }
 
