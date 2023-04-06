@@ -124,7 +124,7 @@ export default defineComponent({
         ws.onmessage = function (evt) {
           // console.log(evt)
           let received_msg = JSON.parse(evt.data);
-          // console.log("数据已接收...", received_msg);
+          console.log("数据已接收...", received_msg);
 
           let myDate = new Date();
           let time = myDate.toLocaleDateString() + " " + myDate.toLocaleTimeString()
