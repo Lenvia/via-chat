@@ -27,7 +27,7 @@ func InitRoute() *gin.Engine {
 	// 创建路由分组，并启用 cookie-based 会话
 	sr := router.Group("/", session.EnableCookieSession())
 	{
-		//sr.GET("/", controller.Index)
+		sr.GET("/", controller.Index)
 
 		sr.POST("/login", controller.Login)
 		sr.GET("/logout", controller.Logout)

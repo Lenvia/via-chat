@@ -58,11 +58,22 @@ export default {
           password: formData.password,
           avatar_id: "1",  // 临时的
         })
+        console.log(response.data)
 
         if (response.data.code === 0) {
+          sessionStorage.setItem('username', formData.username);
           await router.push('/home')
-        } else {
-          ElMessage.error('登录失败')
+        } else if(response.data.code === 5000) {
+          ElMessage({
+            message: response.data.message,
+            type: 'error'
+          });
+        }
+        else{
+          ElMessage({
+            message: '登录失败',
+            type: 'error'
+          });
         }
       } catch (error) {
         console.error(error)

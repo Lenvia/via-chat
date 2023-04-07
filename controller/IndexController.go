@@ -15,17 +15,17 @@ import (
 // 在用户未登录的情况下，将显示登录页面，并展示当前在线用户的数量。
 func Index(c *gin.Context) {
 	// 已登录跳转room界面，多页面应该考虑放在中间件实现
-	userInfo := user_service.GetUserInfo(c)
-	if len(userInfo) > 0 { // 如果用户已经登录，则重定向到应用程序的home页面
-		c.Redirect(http.StatusFound, "/home")
-		return
-	}
+	//userInfo := user_service.GetUserInfo(c)
+	//if len(userInfo) > 0 { // 如果用户已经登录，则重定向到应用程序的home页面
+	//	c.Redirect(http.StatusFound, "/home")
+	//	return
+	//}
 
-	OnlineUserCount := primary.OnlineUserCount()
-	c.HTML(http.StatusOK, "login.html", gin.H{
-		"OnlineUserCount": OnlineUserCount,
-	})
-	//c.Abort()
+	//OnlineUserCount := primary.OnlineUserCount()
+	//c.HTML(http.StatusOK, "login.html", gin.H{
+	//	"OnlineUserCount": OnlineUserCount,
+	//})
+	c.Abort()
 }
 
 func Login(c *gin.Context) {
