@@ -8,8 +8,14 @@ import './assets/css/style.css'
 // 创建应用实例
 const app = createApp(App)
 
+const getUrl = () => {
+    const host = window.location.hostname;
+    const protocol = window.location.protocol;
+    return `${protocol}//${host}:8322`;
+};
 
-const Url = 'http://localhost:8322/'
+
+const Url = getUrl()
 axios.defaults.baseURL = Url
 app.config.globalProperties.$http = axios
 app.config.globalProperties.$http.defaults.withCredentials = true

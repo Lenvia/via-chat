@@ -19,6 +19,7 @@ func Cors() gin.HandlerFunc {
 	//)
 	return func(c *gin.Context) {
 		method := c.Request.Method
+
 		origin := c.GetHeader("Origin")
 		c.Header("Access-Control-Allow-Origin", origin)                                                                                                                          // 注意这一行，不能配置为通配符“*”号
 		c.Header("Access-Control-Allow-Credentials", "true")                                                                                                                     // 注意这一行，必须设定为 true

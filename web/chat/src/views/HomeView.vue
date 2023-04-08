@@ -28,6 +28,7 @@
 import {ElRow, ElCol, ElMessage} from "element-plus";
 import app from "@/main";
 import router from "@/router";
+import {onMounted, ref} from "vue";
 
 export default {
   name: "HomeView",
@@ -35,40 +36,41 @@ export default {
     ElRow,
     ElCol,
   },
-  data() {
-    return {
-      user_info:{
-        username: null,
-      },
-      rooms: [],
-    };
-  },
-  mounted() {
-    this.getData();
-  },
-  methods: {
-    async getData() {
+  setup() {
+    const user_info = ref({ username: null });
+    const rooms = ref([]);
+
+    const getData = async () => {
       try {
         const res = await app.config.globalProperties.$http.get("/home");
+        console.log(res);
         if (res.status === 200) {
-          const { data, user_info } = res.data;
-          this.rooms = data;
-          this.user_info = user_info;
+          const { data, user_info: userInfo } = res.data;
+          rooms.value = data;
+          user_info.value = userInfo;
         }
       } catch (error) {
         console.error(error);
       }
-    },
+    };
 
-    async enterRoom(room_id) {
+    const enterRoom = async (room_id) => {
       console.log(room_id);
       await router.push({
         name: 'room',
         params: {
           room_id,
         },
-      })
-    }
+      });
+    };
+
+    onMounted(getData);
+
+    return {
+      user_info,
+      rooms,
+      enterRoom,
+    };
   },
 }
 
