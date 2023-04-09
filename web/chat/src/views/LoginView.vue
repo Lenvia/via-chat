@@ -5,7 +5,7 @@
         <el-input v-model="formData.username"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input type="password" v-model="formData.password"></el-input>
+        <el-input type="password" v-model="formData.password" @keydown.enter.prevent="handleEnter"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">登录</el-button>
@@ -46,7 +46,10 @@ export default {
     }
 
 
-    // const router = useRouter()
+    const handleEnter = (event) => {
+      // 处理 Enter 键按下事件
+      handleSubmit();
+    };
 
     const handleSubmit = async () => {
       try {
@@ -85,7 +88,8 @@ export default {
       formRef,  // 将 formRef 渲染到模板中
       formData,
       rules,
-      handleSubmit
+      handleSubmit,
+      handleEnter,
     }
   },
 
