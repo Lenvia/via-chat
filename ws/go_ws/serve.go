@@ -324,7 +324,7 @@ func notify(conn *websocket.Conn, msg string) {
 	assignRoom := rooms[roomIdInt]
 	//fmt.Println("将要广播的房间号为：", roomIdInt)
 	// 遍历该房间中所有的客户端连接对象，并向除了当前连接对象之外的其它客户端连接对象发送消息
-	fmt.Println("当前房间的连接：", assignRoom)
+	//fmt.Println("当前房间的连接：", assignRoom)
 	for _, client := range assignRoom {
 		fmt.Println(client.(wsClients).RemoteAddr)
 		client.(wsClients).Conn.WriteMessage(websocket.TextMessage, []byte(msg))

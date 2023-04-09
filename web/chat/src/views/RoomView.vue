@@ -89,7 +89,7 @@ export default defineComponent({
         msgList.value = data.msg_list;
         msgListCount.value = data.msg_list_count;
         
-        // console.log(userInfo.value);
+
         WebSocketConnect(userInfo.value, room_id)
         
       } else {
@@ -107,7 +107,7 @@ export default defineComponent({
     });
 
     function WebSocketConnect(userInfo, room_id, toUserInfo = null) {
-
+        const host = window.location.hostname;
         if (userInfo.uid <= 0) {
           alert('参数错误，请刷新页面重试');
           return false;
@@ -124,7 +124,8 @@ export default defineComponent({
           }
         })
 
-        ws = new WebSocket(`ws://localhost:8322/ws`); // 连接 WebSocket
+        ws = new WebSocket(`ws://${host}:8322/ws`); // 连接 WebSocket
+        console.log(ws)
 
         ws.onopen = function () {
           ws.send(send_data);
