@@ -11,7 +11,7 @@
     </div>
 
     <div class="textarea-wrapper">
-      <textarea class="chat-input" ref="sendContent"></textarea>
+      <textarea class="chat-input" ref="sendContent" @keydown.enter.prevent="handleEnter"></textarea>
       <button class="send-button" ref="sendButton">Send</button>
     </div>
 
@@ -64,6 +64,18 @@ export default defineComponent({
       sendContent.value.value = '';
     };
 
+    const handleEnter = (event) => {
+      // 处理 Enter 键按下事件
+      if (event.metaKey || event.ctrlKey || event.shiftKey) { // 检查是否按下 Command 或 Ctrl 键
+        // 换行逻辑，可以根据需要自行实现
+        event.preventDefault(); // 阻止默认的换行行为
+        const content = sendContent.value.value;
+        sendContent.value.value = content + "\n"; // 在textarea中添加换行符
+      } else {
+        // 发送消息逻辑
+        handleClick();
+      }
+    };
 
 
 
@@ -90,8 +102,6 @@ export default defineComponent({
       });
     }
     onMounted(() => {
-
-
       loadHistoryAndBuildWS();
       sendButton.value.addEventListener('click', handleClick); // 绑定按钮的点击事件
     });
@@ -215,6 +225,7 @@ export default defineComponent({
       msgContainer,
       sendButton,
       sendContent,
+      handleEnter,
       getUsername,
       getMessageClass,
     };
