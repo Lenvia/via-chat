@@ -9,9 +9,11 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 	"via-chat/models"
+	"via-chat/services/gpt"
 	"via-chat/services/helper"
 	"via-chat/ws"
 )
@@ -218,6 +220,14 @@ func read(c *websocket.Conn) {
 			// 根据客户端发送的消息类型，将其转化为需要发送给其他客户端的服务端消息，并添加到消息队列中，等待发送
 			_, serveMsg := formatServeMsgStr(clientMsg.Status, c)
 			sMsg <- serveMsg
+
+			fmt.Println(clientMsg.Data.Content)
+			if strings.HasPrefix(clientMsg.Data.Content, "@GPT ") {
+				fmt.Println(gpt.OpenaiClient)
+				if gpt.OpenaiClient != nil {
+					fmt.Println(gpt.GetReply(gpt.OpenaiClient, clientMsg.Data.Content))
+				}
+			}
 		}
 	}
 }
