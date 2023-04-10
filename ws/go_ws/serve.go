@@ -223,13 +223,7 @@ func read(c *websocket.Conn) {
 			_, serveMsg := formatServeMsgStr(clientMsg.Status, c)
 			sMsg <- serveMsg
 
-			fmt.Println(clientMsg.Data.Content)
-			if strings.HasPrefix(clientMsg.Data.Content, "@GPT ") {
-				fmt.Println(gpt.OpenaiClient)
-				if gpt.OpenaiClient != nil {
-					fmt.Println(gpt.GetReply(gpt.OpenaiClient, clientMsg.Data.Content))
-				}
-			}
+			go requestGPT()
 		}
 	}
 }
@@ -462,6 +456,17 @@ func getRoomId() (string, int) {
 
 	roomIdInt, _ := strconv.Atoi(roomId)
 	return roomId, roomIdInt
+}
+
+// TODO
+func requestGPT() {
+	fmt.Println(clientMsg.Data.Content)
+	if strings.HasPrefix(clientMsg.Data.Content, "@GPT ") {
+		fmt.Println(gpt.OpenaiClient)
+		if gpt.OpenaiClient != nil {
+			fmt.Println(gpt.GetReply(gpt.OpenaiClient, clientMsg.Data.Content))
+		}
+	}
 }
 
 // =======================对外方法=====================================
