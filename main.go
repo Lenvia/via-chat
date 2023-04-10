@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
-	"via-chat/conf"
+	"via-chat/configs"
 	"via-chat/models"
 	"via-chat/routes"
 	"via-chat/ws/go_ws"
@@ -17,7 +17,7 @@ func init() {
 	viper.SetConfigType("json")
 
 	// 读取配置文件，如果文件不可用则记录日志
-	if err := viper.ReadConfig(bytes.NewBuffer(conf.AppJsonConfig)); err != nil {
+	if err := viper.ReadConfig(bytes.NewBuffer(configs.AppJsonConfig)); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			log.Println("no such config file") // 配置文件不存在，记录日志
 		} else {

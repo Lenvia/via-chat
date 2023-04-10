@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net/http"
-	"via-chat/controller"
+	"via-chat/api/v1"
 	"via-chat/middleware"
 	"via-chat/services/session"
 	"via-chat/static"
@@ -27,21 +27,21 @@ func InitRoute() *gin.Engine {
 	// 创建路由分组，并启用 cookie-based 会话
 	sr := router.Group("/", session.EnableCookieSession())
 	{
-		sr.GET("/", controller.Index)
+		sr.GET("/", v1.Index)
 
-		sr.POST("/login", controller.Login)
-		sr.GET("/logout", controller.Logout)
+		sr.POST("/login", v1.Login)
+		sr.GET("/logout", v1.Logout)
 		sr.GET("/ws", primary.Start)
 
 		authorized := sr.Group("/") // 使用 AuthSessionMiddle() 中间件检查用户是否已登录
 		authorized.Use(session.AuthSessionMiddle())
 		{
 			//authorized.GET("/ws", ws.Run)
-			authorized.GET("/home", controller.Home)
-			authorized.GET("/room/:room_id", controller.Room)
-			authorized.GET("/private-chat", controller.PrivateChat)
-			authorized.POST("/img-kr-upload", controller.ImgKrUpload)
-			authorized.GET("/pagination", controller.Pagination)
+			authorized.GET("/home", v1.Home)
+			authorized.GET("/room/:room_id", v1.Room)
+			authorized.GET("/private-chat", v1.PrivateChat)
+			authorized.POST("/img-kr-upload", v1.ImgKrUpload)
+			authorized.GET("/pagination", v1.Pagination)
 		}
 
 	}

@@ -1,12 +1,12 @@
-package controller
+package v1
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"via-chat/services/img_upload_connector"
 	"net/http"
 	"os"
+	"via-chat/services/img_upload_connector"
 )
 
 func ImgKrUpload(c *gin.Context) {

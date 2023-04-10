@@ -1,4 +1,4 @@
-package conf
+package configs
 
 /*参数说明
 app.port // 应用端口
