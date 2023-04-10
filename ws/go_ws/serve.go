@@ -197,7 +197,9 @@ func read(c *websocket.Conn) {
 		if string(serveMsgStr) == `heartbeat` {
 			appendPing(c)
 			log.Println(pingMap)
+			chNotify <- 1
 			c.WriteMessage(websocket.TextMessage, []byte(`{"status":0,"data":"heartbeat ok"}`)) // 向客户端发送心跳响应
+			<-chNotify
 			continue
 		}
 
