@@ -461,12 +461,45 @@ func getRoomId() (string, int) {
 // TODO
 func requestGPT() {
 	fmt.Println(clientMsg.Data.Content)
-	if strings.HasPrefix(clientMsg.Data.Content, "@GPT ") {
-		fmt.Println(gpt.OpenaiClient)
+	pattern := "@GPT"
+	var reply string
+	if strings.HasPrefix(clientMsg.Data.Content, pattern) {
+		query := clientMsg.Data.Content[len(pattern):]
 		if gpt.OpenaiClient != nil {
-			fmt.Println(gpt.GetReply(gpt.OpenaiClient, clientMsg.Data.Content))
+			reply = gpt.GetReply(gpt.OpenaiClient, query)
+			roomId, _ := getRoomId()
+
+			// 持久化
+			var message models.Message
+			message = models.SaveContent(map[string]interface{}{
+				"user_id":    -1,
+				"to_user_id": -1,
+				"content":    reply,
+				"room_id":    roomId,
+			})
+
+			// 制作消息
+			data := msgData{
+				Username: "[ChatGPT]",
+				Uid:      "-1",
+				RoomId:   roomId,
+				Content:  reply,
+				Time:     time.Now().UnixNano() / 1e6, // 13位  10位 => now.Unix()
+			}
+
+			data.CreatedAt = message.CreatedAt
+			data.UpdatedAt = message.UpdatedAt
+			data.ID = message.ID
+
+			jsonStrServeMsg := msg{
+				Status: msgTypeSend,
+				Data:   data,
+				Conn:   nil,
+			}
+			sMsg <- jsonStrServeMsg
 		}
 	}
+
 }
 
 // =======================对外方法=====================================

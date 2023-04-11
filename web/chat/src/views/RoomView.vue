@@ -125,7 +125,7 @@ export default defineComponent({
         })
 
         ws = new WebSocket(`ws://${host}:8322/ws`); // 连接 WebSocket
-        console.log(ws)
+        // console.log(ws)
 
         ws.onopen = function () {
           ws.send(send_data);
