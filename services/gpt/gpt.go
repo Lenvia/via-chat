@@ -8,12 +8,16 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"via-chat/models"
 )
 
 var OpenaiClient *openai.Client
 
+var ChatGptName string
+
 func LoadGPT(file *ini.File) {
 	ApiKey := file.Section("gpt").Key("API_KEY").String()
+	ChatGptName = file.Section("gpt").Key("GPT_NAME").String()
 
 	config := gogpt.DefaultConfig(ApiKey)
 	proxyUrl, err := url.Parse("http://127.0.0.1:7890") // WARNING 当前仅支持本地，如何在容器中穿透？
@@ -29,6 +33,17 @@ func LoadGPT(file *ini.File) {
 	}
 
 	OpenaiClient = gogpt.NewClientWithConfig(config)
+
+	if OpenaiClient != nil {
+		user := models.FindUserByField("username", ChatGptName)
+		if user.ID <= 0 {
+			_ = models.AddUser(map[string]interface{}{
+				"username":  ChatGptName,
+				"password":  "NULL",
+				"avatar_id": "1",
+			})
+		}
+	}
 }
 
 func GetReply(client *openai.Client, query string) string {

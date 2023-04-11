@@ -458,7 +458,6 @@ func getRoomId() (string, int) {
 	return roomId, roomIdInt
 }
 
-// TODO
 func requestGPT() {
 	fmt.Println(clientMsg.Data.Content)
 	pattern := "@GPT"
@@ -471,8 +470,10 @@ func requestGPT() {
 
 			// 持久化
 			var message models.Message
+			ChatGptIdInt := int(models.FindUserByField("username", gpt.ChatGptName).ID)
+
 			message = models.SaveContent(map[string]interface{}{
-				"user_id":    -1,
+				"user_id":    ChatGptIdInt,
 				"to_user_id": -1,
 				"content":    reply,
 				"room_id":    roomId,
@@ -480,8 +481,8 @@ func requestGPT() {
 
 			// 制作消息
 			data := msgData{
-				Username: "[ChatGPT]",
-				Uid:      "-1",
+				Username: gpt.ChatGptName,
+				Uid:      strconv.Itoa(ChatGptIdInt),
 				RoomId:   roomId,
 				Content:  reply,
 				Time:     time.Now().UnixNano() / 1e6, // 13位  10位 => now.Unix()

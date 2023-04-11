@@ -2,11 +2,12 @@
   <div class="chat-room">
     <div class="chat-messages" ref="msgContainer">
       <div v-for="msg in msgList" :key="msg.id" :class="msg.type === 'system' ? 'system-info' : getMessageClass(msg)">
-        <div>{{ msg.content }}</div>
-        <div class="message-info" v-if="msg.type !== 'system'">
-          <div class="message-sender">{{ getUsername(msg) }}</div>
+
+        <div v-if="msg.type !== 'system'" :class="getUsernameClass(msg)">
+          <div>{{ getUsername(msg) }}</div>
           <!--<div class="message-time">{{ formatTime(msg.CreatedAt) }}</div>-->
         </div>
+        <div>{{ msg.content }}</div>
       </div>
     </div>
 
@@ -208,7 +209,7 @@ export default defineComponent({
       if (message.user_id === parseInt(userInfo.value.uid)) {
         return 'You';
       }
-      return message.user_id;
+      return message.username;
     }
 
     // Get the class for a message element (based on whether it is from the current user or not)
@@ -217,6 +218,13 @@ export default defineComponent({
         return 'message-sent';
       }
       return 'message-received';
+    }
+
+    function getUsernameClass(message){
+      if (message.user_id === parseInt(userInfo.value.uid)) {
+        return 'username-sent';
+      }
+      return 'username-received';
     }
 
     return {
@@ -229,6 +237,7 @@ export default defineComponent({
       handleEnter,
       getUsername,
       getMessageClass,
+      getUsernameClass,
     };
   },
 });
@@ -243,7 +252,7 @@ export default defineComponent({
   position: absolute;
   top: 5%;
   left: 50%;
-  width: 50%;
+  width: 40%;
   height: calc(85% - 50px);
   border: 1px solid #ccc;
   overflow-y: auto;
@@ -266,15 +275,19 @@ export default defineComponent({
   color: #000;
 }
 
-.message-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-}
 
-.message-sender {
+.message-username {
   font-weight: bold;
   margin-right: 10px;
+}
+
+.username-sent{
+  font-weight: bold;
+  text-align: right;
+}
+.username-received{
+  font-weight: bold;
+  text-align: left;
 }
 
 .message-time {
@@ -285,7 +298,7 @@ export default defineComponent({
   position: absolute;
   bottom: 5%;
   left: 50%;
-  width: 50%;
+  width: 40%;
   transform: translate(-50%, 0);
   display: flex;
   align-items: center;
