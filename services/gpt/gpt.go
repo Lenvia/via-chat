@@ -46,7 +46,7 @@ func LoadGPT(file *ini.File) {
 	}
 }
 
-func GetReply(client *openai.Client, query string) string {
+func GetReply(client *openai.Client, query string) (string, error) {
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
@@ -57,10 +57,6 @@ func GetReply(client *openai.Client, query string) string {
 			},
 		},
 	)
-
-	if err != nil {
-		log.Println(err)
-	}
 	reply := resp.Choices[0].Message.Content
-	return reply
+	return reply, err
 }

@@ -462,12 +462,17 @@ func requestGPT() {
 	fmt.Println(clientMsg.Data.Content)
 	pattern := "@GPT"
 	var reply string
+	var err error
 	if strings.HasPrefix(clientMsg.Data.Content, pattern) {
 		query := clientMsg.Data.Content[len(pattern):]
 		if gpt.OpenaiClient != nil {
-			reply = gpt.GetReply(gpt.OpenaiClient, query)
-			roomId, _ := getRoomId()
+			reply, err = gpt.GetReply(gpt.OpenaiClient, query)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 
+			roomId, _ := getRoomId()
 			// 持久化
 			var message models.Message
 			ChatGptIdInt := int(models.FindUserByField("username", gpt.ChatGptName).ID)
@@ -481,16 +486,15 @@ func requestGPT() {
 
 			// 制作消息
 			data := msgData{
-				Username: gpt.ChatGptName,
-				Uid:      strconv.Itoa(ChatGptIdInt),
-				RoomId:   roomId,
-				Content:  reply,
-				Time:     time.Now().UnixNano() / 1e6, // 13位  10位 => now.Unix()
+				Username:  gpt.ChatGptName,
+				Uid:       strconv.Itoa(ChatGptIdInt),
+				RoomId:    roomId,
+				Content:   reply,
+				Time:      time.Now().UnixNano() / 1e6, // 13位  10位 => now.Unix()
+				CreatedAt: message.CreatedAt,
+				UpdatedAt: message.UpdatedAt,
+				ID:        message.ID,
 			}
-
-			data.CreatedAt = message.CreatedAt
-			data.UpdatedAt = message.UpdatedAt
-			data.ID = message.ID
 
 			jsonStrServeMsg := msg{
 				Status: msgTypeSend,
