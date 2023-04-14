@@ -20,7 +20,7 @@ func LoadGPT(file *ini.File) {
 	ChatGptName = file.Section("gpt").Key("GPT_NAME").String()
 
 	config := gogpt.DefaultConfig(ApiKey)
-	proxyUrl, err := url.Parse("http://127.0.0.1:7890") // WARNING 当前仅支持本地，如何在容器中穿透？
+	proxyUrl, err := url.Parse("http://127.0.0.1:7890")
 	// proxyUrl, err := url.Parse("http://host.docker.internal:7890")  // 访问宿主机代理
 	if err != nil {
 		log.Println(err)
