@@ -40,7 +40,7 @@ func InitRoute() *gin.Engine {
 			authorized.GET("/home", v1.Home)
 			authorized.GET("/room/:room_id", v1.Room)
 			authorized.GET("/private-chat", v1.PrivateChat)
-			authorized.POST("/img-kr-upload", v1.ImgKrUpload)
+			//authorized.POST("/img-kr-upload", v1.ImgKrUpload)
 			authorized.GET("/pagination", v1.Pagination)
 		}
 

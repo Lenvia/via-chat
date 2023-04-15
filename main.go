@@ -62,7 +62,7 @@ func main() {
 
 	go_ws.CleanOfflineConn() // 清理已离线的 WebSocket 连接
 
-	log.Println("监听端口", "http://127.0.0.1:"+port) // 打印监听端口的地址信息
+	log.Println("listening port:", port) // 打印监听端口的地址信息
 
 	http.ListenAndServe(":"+port, router) // 启动 HTTP 服务器并监听端口
 }
