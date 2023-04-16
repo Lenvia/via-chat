@@ -36,7 +36,6 @@ func InitRoute() *gin.Engine {
 		authorized := sr.Group("/") // 使用 AuthSessionMiddle() 中间件检查用户是否已登录
 		authorized.Use(session.AuthSessionMiddle())
 		{
-			//authorized.GET("/ws", ws.Run)
 			authorized.GET("/home", v1.Home)
 			authorized.GET("/room/:room_id", v1.Room)
 			authorized.GET("/private-chat", v1.PrivateChat)

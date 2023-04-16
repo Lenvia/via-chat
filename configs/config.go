@@ -15,7 +15,6 @@ var AppJsonConfig = []byte(`
     "port": "8322",
     "upload_file_path": "/Users/yy/GithubProjects/via-chat/tmp_images/",
     "cookie_key": "4238uihfieh49r3453kjdfg",
-    "serve_type": "GoServe",
     "debug_mod": "true"
   },
   "mysql": {
