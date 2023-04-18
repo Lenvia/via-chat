@@ -84,6 +84,7 @@ func Room(c *gin.Context) {
 	//	"msg_list_count": len(msgList),
 	//	"room_id":        roomId,
 	//})
+	//fmt.Println(msgList)
 	c.JSON(http.StatusOK, gin.H{
 		"user_info":      userInfo,
 		"msg_list":       msgList,

@@ -87,7 +87,8 @@ export default defineComponent({
       if (response.status === 200) {
         const data = await response.data;
         userInfo.value = data.user_info;
-        msgList.value = data.msg_list;
+        if(data.msg_list !== null)  // 空消息不赋值
+          msgList.value = data.msg_list;
         msgListCount.value = data.msg_list_count;
         
 

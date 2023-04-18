@@ -7,12 +7,12 @@ import (
 
 type User struct {
 	gorm.Model
-	ID        uint
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	AvatarId  string `json:"avatar_id"`
-	CreatedAt time.Time `time_format:"2006-01-02 15:04:05"`
-	UpdatedAt time.Time `time_format:"2006-01-02 15:04:05"`
+	ID        uint      `gorm:"column:id"`
+	Username  string    `gorm:"column:username"`
+	Password  string    `gorm:"column:password"`
+	AvatarId  string    `gorm:"column:avatar_id"`
+	CreatedAt time.Time `gorm:"column:created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
 
 func AddUser(value interface{}) User {
@@ -40,7 +40,7 @@ func FindUserByField(field, value string) User {
 	return u
 }
 
-func GetOnlineUserList(uids []float64 ) []map[string]interface{} {
+func GetOnlineUserList(uids []float64) []map[string]interface{} {
 	var results []map[string]interface{}
 	ChatDB.Where("id IN ?", uids).Find(&results)
 

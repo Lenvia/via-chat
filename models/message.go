@@ -8,16 +8,16 @@ import (
 )
 
 // Message TODO 可以使用 mapstructure.Decode() 函数将 map 解码为 Go 结构体，从而省略在 SaveContent() 函数中使用断言的部分。
-type Message struct { // GORM 库会自动将结构体中的驼峰式命名转换为下划线式命名。此外，可以使用 GORM 提供的 struct tag 来进行更精细的控制
+type Message struct {
 	gorm.Model
-	ID        uint
-	UserId    int
-	ToUserId  int
-	RoomId    int
-	Content   string
-	ImageUrl  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        uint      `gorm:"column:id"`
+	UserId    int       `gorm:"column:user_id"`
+	ToUserId  int       `gorm:"column:to_user_id"`
+	RoomId    int       `gorm:"column:room_id"`
+	Content   string    `gorm:"column:content"`
+	ImageUrl  string    `gorm:"column:image_url"`
+	CreatedAt time.Time `gorm:"column:created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
 
 // SaveContent 函数将消息内容保存到数据库中，value 参数为消息内容的 map 类型数据。
