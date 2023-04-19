@@ -478,7 +478,7 @@ func requestGPT() {
 
 			message = models.SaveContent(map[string]interface{}{
 				"user_id":    ChatGptIdInt,
-				"to_user_id": -1,
+				"to_user_id": 0,
 				"content":    reply,
 				"room_id":    roomId,
 			})
