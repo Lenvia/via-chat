@@ -206,7 +206,6 @@ func read(c *websocket.Conn) {
 		json.Unmarshal(message, &clientMsg)
 		fmt.Println("来自客户端的消息", clientMsg, c.RemoteAddr())
 		if clientMsg.Data.Uid != "" { // 已经登录过的用户
-
 			if clientMsg.Status == msgTypeOnline { // 进入房间，建立连接
 				roomId, _ := getRoomId()
 				enterRooms <- wsClients{

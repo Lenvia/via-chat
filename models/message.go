@@ -2,6 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"log"
 	"sort"
 	"strconv"
 	"time"
@@ -37,7 +38,25 @@ func SaveContent(value interface{}) Message {
 		m.ImageUrl = value.(map[string]interface{})["image_url"].(string)
 	}
 
-	ChatDB.Create(&m)
+	tx := ChatDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback() // 发生错误时回滚事务
+		}
+	}()
+
+	err := tx.Create(&m).Error
+	if err != nil {
+		tx.Rollback() // 发生错误时回滚事务
+		log.Println(err)
+	}
+
+	// 提交事务
+	err = tx.Commit().Error
+	if err != nil {
+		log.Println(err)
+	}
+
 	return m
 }
 
@@ -58,7 +77,7 @@ func GetLimitMsg(roomId string, offset int) []map[string]interface{} {
 	// 如果 offset 为 0，则按照 id 升序排序
 	if offset == 0 {
 		sort.Slice(results, func(i, j int) bool {
-			return results[i]["id"].(uint32) < results[j]["id"].(uint32)
+			return results[i]["id"].(uint64) < results[j]["id"].(uint64)
 		})
 	}
 
@@ -83,7 +102,7 @@ func GetLimitPrivateMsg(uid, toUId string, offset int) []map[string]interface{} 
 
 	if offset == 0 {
 		sort.Slice(results, func(i, j int) bool {
-			return results[i]["id"].(uint32) < results[j]["id"].(uint32)
+			return results[i]["id"].(uint64) < results[j]["id"].(uint64)
 		})
 	}
 

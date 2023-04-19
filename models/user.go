@@ -2,6 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"log"
 	"time"
 )
 
@@ -20,13 +21,50 @@ func AddUser(value interface{}) User {
 	u.Username = value.(map[string]interface{})["username"].(string)
 	u.Password = value.(map[string]interface{})["password"].(string)
 	u.AvatarId = value.(map[string]interface{})["avatar_id"].(string)
-	ChatDB.Create(&u)
+
+	tx := ChatDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback() // 发生错误时回滚事务
+		}
+	}()
+
+	err := tx.Create(&u).Error
+	if err != nil {
+		tx.Rollback() // 发生错误时回滚事务
+		log.Println(err)
+	}
+
+	// 提交事务
+	err = tx.Commit().Error
+	if err != nil {
+		log.Println(err)
+	}
 	return u
 }
 
 func SaveAvatarId(AvatarId string, u User) User {
 	u.AvatarId = AvatarId
-	ChatDB.Save(&u)
+
+	tx := ChatDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback() // 发生错误时回滚事务
+		}
+	}()
+
+	err := tx.Save(&u).Error
+	if err != nil {
+		tx.Rollback() // 发生错误时回滚事务
+		log.Println(err)
+	}
+
+	// 提交事务
+	err = tx.Commit().Error
+	if err != nil {
+		log.Println(err)
+	}
+
 	return u
 }
 
