@@ -8,7 +8,9 @@ RUN go build -o room .
 FROM ubuntu:20.04
 
 WORKDIR /app
+
 COPY --from=build /app/room .
+COPY --from=build /app/configs/openai_config.ini configs/openai_config.ini
 
 EXPOSE 8322
 

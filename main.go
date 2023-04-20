@@ -44,6 +44,8 @@ func init() {
 		}
 		gpt.LoadGPT(file)
 		log.Println("初始化GPT完成!")
+	} else {
+		log.Println(err)
 	}
 
 }

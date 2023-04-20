@@ -2,6 +2,7 @@ package gpt
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"github.com/sashabaranov/go-openai"
 	gogpt "github.com/sashabaranov/go-openai"
 	"gopkg.in/ini.v1"
@@ -18,6 +19,10 @@ var ChatGptName string
 func LoadGPT(file *ini.File) {
 	ApiKey := file.Section("gpt").Key("API_KEY").String()
 	ChatGptName = file.Section("gpt").Key("GPT_NAME").String()
+
+	if len(ApiKey) < 10 {
+		return
+	}
 
 	config := gogpt.DefaultConfig(ApiKey)
 	//proxyUrl, err := url.Parse("http://127.0.0.1:7890")
@@ -57,6 +62,18 @@ func GetReply(client *openai.Client, query string) (string, error) {
 			},
 		},
 	)
-	reply := resp.Choices[0].Message.Content
+	if err != nil {
+		return "", err
+	}
+
+	log.Println(resp)
+	var reply string
+	if len(resp.Choices) > 0 {
+		reply = resp.Choices[0].Message.Content
+	} else {
+		reply = ""
+		err = errors.Errorf("failed")
+	}
+
 	return reply, err
 }
