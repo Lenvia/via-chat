@@ -1,0 +1,8 @@
+app:
+  port: "8322"
+  upload_file_path: "/Users/yy/GithubProjects/via-web/tmp_images/"
+  cookie_key: "4238uihfieh49r3453kjdfg"
+  serve_type: "GoServe"
+  debug_mod: "true"
+mysql:
+  dsn: "root:y724290941@tcp(127.0.0.1)/room?charset=utf8mb4&parseTime=True&loc=Local"
