@@ -5,7 +5,7 @@ ADD . .
 
 RUN go build -o room .
 
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
 WORKDIR /app
 
