@@ -1,7 +1,7 @@
 # via-chat
 
 前后端分离的多人在线聊天室。
-基于 [go-gin-chat](https://github.com/hezhizheng/go-gin-chat) 进行改进。
+基于 [go-gin-chat](https://github.com/hezhizheng/go-gin-chat) 进行修改。
 
 - 前后端通过 http 通信，使用 session 记录状态实现登录验证
 - 启用 websocket 实现双向通信及消息实时更新
@@ -20,3 +20,5 @@
 - 引入Redis（在线用户列表、缓存聊天消息等）
 - grpc 远程调用（用在langchain）
 - websocket HTTPS
+- Proxy SSL (access GPT via host port)
+- JWT 替换 session
