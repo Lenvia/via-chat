@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: y724290941
+      MYSQL_DATABASE: room
+    networks:
+      - net1
+    ports:
+      - 3307:3306
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    image: chat-server
+    depends_on:
+      - mysql
+    networks:
+      - net1
+    ports:
+      - 8322:8322
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: chat-web
+    networks:
+      - net1
+    ports:
+      - 8080:8080
+
+networks:
+  net1:
