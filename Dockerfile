@@ -31,24 +31,3 @@ EXPOSE 8322 8080
 
 RUN chmod +x start.sh
 CMD ["./start.sh"]
-
-
-## 以下是单独部署后端
-#FROM golang:1.19 AS build
-#
-#WORKDIR /app
-#ADD server .
-#
-#RUN go build -o room .
-
-
-#FROM ubuntu:latest
-#
-#WORKDIR /app
-#
-#COPY --from=build /app/room .
-#COPY --from=build /app/configs/openai_config.ini configs/openai_config.ini
-#
-#EXPOSE 8322
-#
-#CMD ["./room"]
