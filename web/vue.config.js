@@ -7,5 +7,6 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     allowedHosts: "all",
+    port: 8323,
   }
 }

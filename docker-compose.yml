@@ -31,7 +31,7 @@ services:
     networks:
       - net1
     ports:
-      - 8080:8080
+      - 8323:8323
 
 networks:
   net1:
