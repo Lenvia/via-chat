@@ -14,12 +14,39 @@
 
 
 
+## Quick Start
+
+- 自行安装docker
+
+- 进入项目根目录
+
+- 根据个人情况配置server的数据库、GPT
+
+  ```
+  cp server/configs/config.go.env server/configs/config.go
+  cp server/configs/openai_config.ini.env server/configs/openai_config.ini
+  ```
+
+- docker compose 编译和启动（如需更改docker-compose 配置，请查看 `docker-compose.yml`
+
+  ```
+  docker-compose build
+  docker-compose up -d
+  
+  # 停止
+  # docker-compose stop
+  # 移除
+  # docker-compose down
+  ```
+
+
+
 ## TODO
 - [ ] 数据库事务
 - [ ] 图片上传图床
 - [ ] 引入Redis（在线用户列表、缓存聊天消息等）
 - [ ] grpc 远程调用（用在langchain）
 - [ ] websocket HTTPS
-- [x] certificates （access GPTt）
+- [x] certificates （access GPT）
 - [ ] JWT 替换 session （以去除同源访问）
 - [ ] 心跳检测
