@@ -15,11 +15,11 @@
 
 
 ## TODO
--[ ]数据库事务
--[ ]心跳检测
--[ ]图片上传图床
--[ ]引入Redis（在线用户列表、缓存聊天消息等）
--[ ]grpc 远程调用（用在langchain）
--[ ]websocket HTTPS
--[ ]Proxy SSL （access GPT via host port）
--[ ]JWT 替换 session （以去除同源访问）
+- [ ] 数据库事务
+- [ ] 图片上传图床
+- [ ] 引入Redis（在线用户列表、缓存聊天消息等）
+- [ ] grpc 远程调用（用在langchain）
+- [ ] websocket HTTPS
+- [ ] Proxy SSL （access GPT via host port）
+- [ ] JWT 替换 session （以去除同源访问）
+- [ ] 心跳检测
