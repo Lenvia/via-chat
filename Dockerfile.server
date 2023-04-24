@@ -9,6 +9,10 @@ RUN go build -o room .
 
 FROM ubuntu:latest
 
+# 证书
+RUN apt-get -qq update \
+    && apt-get -qq install -y --no-install-recommends ca-certificates curl
+
 WORKDIR /app
 
 COPY --from=build /app/room .

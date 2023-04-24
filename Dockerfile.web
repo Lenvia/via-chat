@@ -5,6 +5,6 @@ WORKDIR /app
 COPY web/package*.json ./
 RUN yarn
 COPY web .
-EXPOSE 8080
+EXPOSE 8323
 
-CMD ["yarn", "serve", "--port", "8080"]
+CMD ["yarn", "serve", "--port", "8323"]
