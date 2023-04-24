@@ -20,6 +20,6 @@
 - [ ] 引入Redis（在线用户列表、缓存聊天消息等）
 - [ ] grpc 远程调用（用在langchain）
 - [ ] websocket HTTPS
-- [ ] Proxy SSL （access GPT via host port）
+- [x] certificates （access GPTt）
 - [ ] JWT 替换 session （以去除同源访问）
 - [ ] 心跳检测
