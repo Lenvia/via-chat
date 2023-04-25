@@ -2,6 +2,7 @@ package user_service
 
 import (
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
 	"via-chat/models"
@@ -21,15 +22,18 @@ func Login(c *gin.Context) {
 	username := u.Username
 	pwd := u.Password
 	avatarId := u.AvatarId
+	encryptedPwd := helper.BcryptPwd(pwd) // pwd 是当前输入的密码
 
 	user := models.FindUserByField("username", username)
 	userInfo := user
-	md5Pwd := helper.Md5Encrypt(pwd)
 
 	if userInfo.ID > 0 {
 		// json 用户存在
 		// 验证密码
-		if userInfo.Password != md5Pwd {
+		// 注意，应该是输入的明文密码和 数据库里的hash字符串 进行验证
+		PasswordErr := bcrypt.CompareHashAndPassword([]byte(userInfo.Password), []byte(pwd))
+
+		if PasswordErr != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 5000,
 				"msg":  "密码错误",
@@ -43,7 +47,7 @@ func Login(c *gin.Context) {
 		// 新用户
 		userInfo = models.AddUser(map[string]interface{}{
 			"username":  username,
-			"password":  md5Pwd,
+			"password":  encryptedPwd,
 			"avatar_id": avatarId,
 		})
 	}

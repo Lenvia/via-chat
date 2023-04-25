@@ -1,8 +1,8 @@
 package helper
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	"golang.org/x/crypto/bcrypt"
+	"log"
 	"unicode/utf8"
 )
 
@@ -32,10 +32,12 @@ func InArray(needle interface{}, hystack interface{}) bool {
 	return false
 }
 
-func Md5Encrypt(s string) string {
-	m := md5.New()
-	m.Write([]byte (s))
-	return hex.EncodeToString(m.Sum(nil))
+func BcryptPwd(pwd string) string {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return string(hashedPassword)
 }
 
 func MbStrLen(str string) int {

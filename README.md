@@ -50,4 +50,5 @@
 - [x] certificates （access GPT）
 - [ ] JWT 替换 session （以去除同源访问）
 - [ ] 心跳检测
-- [ ] bcrypt 替换 md5
+- [x] bcrypt 替换 md5
+- [x] Gorm add 重构（map to model）
