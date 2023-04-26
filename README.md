@@ -43,7 +43,6 @@
 
 ## TODO
 - [ ] 数据库事务
-- [ ] 图片上传图床
 - [ ] 引入Redis（在线用户列表、缓存聊天消息等）
 - [ ] grpc 远程调用（用在langchain）
 - [ ] websocket HTTPS
@@ -52,3 +51,8 @@
 - [ ] 心跳检测
 - [x] bcrypt 替换 md5
 - [x] Gorm add 重构（map to model）
+- [ ] 高并发测试
+- [ ] 撤回消息
+- [ ] 私聊
+- [ ] 分布式部署，kafka消息队列
+- [ ] 音频、图片、文件等多模态
