@@ -31,9 +31,9 @@ const router = createRouter({
 
 // router 前置守卫
 router.beforeEach((to, from, next) => {
-  const username = window.sessionStorage.getItem('username')
-  console.log(username);
-  if (!username && to.path !== '/login') {
+  const userToken = window.sessionStorage.getItem('token')
+  // console.log(userToken)
+  if (!userToken && to.path !== '/login') {
     next('/login')
   } else {
     next()

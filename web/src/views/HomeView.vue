@@ -42,7 +42,13 @@ export default {
 
     const getData = async () => {
       try {
-        const res = await app.config.globalProperties.$http.get("/home");
+        const token = window.sessionStorage.getItem('token');
+        const res = await app.config.globalProperties.$http.get("/home", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
         console.log(res);
         if (res.status === 200) {
           const { data, user_info: userInfo } = res.data;

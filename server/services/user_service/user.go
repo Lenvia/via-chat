@@ -1,13 +1,15 @@
 package user_service
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"strconv"
+	"time"
+	"via-chat/middleware"
 	"via-chat/models"
+	"via-chat/services/errmsg"
 	"via-chat/services/helper"
-	"via-chat/services/session"
 	"via-chat/services/validator"
 )
 
@@ -28,8 +30,7 @@ func Login(c *gin.Context) {
 	userInfo := user
 
 	if userInfo.ID > 0 {
-		// json 用户存在
-		// 验证密码
+		// json 用户存在，验证密码
 		// 注意，应该是输入的明文密码和 数据库里的hash字符串 进行验证
 		PasswordErr := bcrypt.CompareHashAndPassword([]byte(userInfo.Password), []byte(pwd))
 
@@ -53,12 +54,12 @@ func Login(c *gin.Context) {
 	}
 
 	if userInfo.ID > 0 {
-		// 登录成功，将用户信息保存到会话中
-		session.SaveAuthSession(c, strconv.Itoa(int(userInfo.ID)))
+		token, _ := getToken(userInfo) // 登录通过，返回token
+
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
+			"code":  0,
+			"token": token,
 		})
-		// 到这里session是有值的
 		return
 	} else {
 		c.JSON(http.StatusOK, gin.H{
@@ -70,11 +71,42 @@ func Login(c *gin.Context) {
 }
 
 func GetUserInfo(c *gin.Context) map[string]interface{} {
-	return session.GetSessionUserInfo(c)
+	username, _ := c.Value("username").(string)
+
+	data := make(map[string]interface{})
+
+	if username != "" { // 使用此ID检索用户信息，例如：ID，用户名和头像编号
+		user := models.FindUserByField("username", username)
+		data["uid"] = user.ID
+		data["username"] = user.Username
+		data["avatar_id"] = user.AvatarId
+	}
+
+	return data
 }
 
 func Logout(c *gin.Context) {
-	session.ClearAuthSession(c)
+	c.Set("username", "")
 	c.Redirect(http.StatusFound, "/")
 	return
+}
+
+func getToken(user models.User) (token string, errMsg string) {
+	j := middleware.NewJWT()
+	claims := middleware.MyClaims{
+		Username: user.Username,
+		StandardClaims: jwt.StandardClaims{
+			NotBefore: time.Now().Unix() - 100,
+			ExpiresAt: time.Now().Unix() + 604800,
+			Issuer:    "viaChat",
+		},
+	}
+
+	token, err := j.CreateToken(claims)
+	if err != nil {
+		return "", errmsg.GetErrMsg(errmsg.ERROR)
+	}
+
+	return token, errmsg.GetErrMsg(errmsg.SUCCESS)
+
 }

@@ -14,17 +14,6 @@ import (
 // 在用户已登录的情况下，将自动跳转到应用程序的房间页面。
 // 在用户未登录的情况下，将显示登录页面，并展示当前在线用户的数量。
 func Index(c *gin.Context) {
-	// 已登录跳转room界面，多页面应该考虑放在中间件实现
-	//userInfo := user_service.GetUserInfo(c)
-	//if len(userInfo) > 0 { // 如果用户已经登录，则重定向到应用程序的home页面
-	//	c.Redirect(http.StatusFound, "/home")
-	//	return
-	//}
-
-	//OnlineUserCount := primary.OnlineUserCount()
-	//c.HTML(http.StatusOK, "login.html", gin.H{
-	//	"OnlineUserCount": OnlineUserCount,
-	//})
 	c.Abort()
 }
 
@@ -48,11 +37,6 @@ func Home(c *gin.Context) {
 		{"id": 6, "num": primary.OnlineRoomUserCount(6)},
 	}
 
-	//c.HTML(http.StatusOK, "index.html", gin.H{
-	//	"rooms":     rooms,
-	//	"user_info": userInfo,
-	//})
-
 	c.JSON(http.StatusOK, gin.H{
 		"data":      rooms,
 		"user_info": userInfo,
@@ -67,8 +51,6 @@ func Room(c *gin.Context) {
 	rooms := []string{"1", "2", "3", "4", "5", "6"}
 
 	if !helper.InArray(roomId, rooms) {
-		//c.Redirect(http.StatusFound, "/room/1")
-		//return
 		roomId = "1"
 	}
 	// 获取当前登录用户身份验证信息
@@ -76,15 +58,6 @@ func Room(c *gin.Context) {
 	// 获取指定房间中的历史聊天消息
 	msgList := message_service.GetLimitMsg(roomId, 0)
 
-	//fmt.Println(msgList)
-
-	//c.HTML(http.StatusOK, "room.html", gin.H{
-	//	"user_info":      userInfo,
-	//	"msg_list":       msgList,
-	//	"msg_list_count": len(msgList),
-	//	"room_id":        roomId,
-	//})
-	//fmt.Println(msgList)
 	c.JSON(http.StatusOK, gin.H{
 		"user_info":      userInfo,
 		"msg_list":       msgList,

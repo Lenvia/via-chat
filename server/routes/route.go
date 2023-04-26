@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"via-chat/api/v1"
 	"via-chat/middleware"
-	"via-chat/services/session"
 	"via-chat/ws/primary"
 )
 
@@ -22,7 +21,7 @@ func InitRoute() *gin.Engine {
 	//}
 
 	// 创建路由分组，并启用 cookie-based 会话
-	sr := router.Group("/", session.EnableCookieSession())
+	sr := router.Group("/")
 	{
 		sr.GET("/", v1.Index)
 
@@ -30,8 +29,8 @@ func InitRoute() *gin.Engine {
 		sr.GET("/logout", v1.Logout)
 		sr.GET("/ws", primary.Start)
 
-		authorized := sr.Group("/") // 使用 AuthSessionMiddle() 中间件检查用户是否已登录
-		authorized.Use(session.AuthSessionMiddle())
+		authorized := sr.Group("/")
+		authorized.Use(middleware.JwtToken())
 		{
 			authorized.GET("/home", v1.Home)
 			authorized.GET("/room/:room_id", v1.Room)

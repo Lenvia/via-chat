@@ -64,7 +64,7 @@ export default {
         console.log(response.data)
 
         if (response.data.code === 0) {
-          sessionStorage.setItem('username', formData.username);
+          window.sessionStorage.setItem('token', response.data.token)
           await router.push('/home')
         } else if(response.data.code === 5000) {
           ElMessage({

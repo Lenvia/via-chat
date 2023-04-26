@@ -82,7 +82,13 @@ export default defineComponent({
 
     // 获取历史消息
     async function loadHistoryAndBuildWS() {
-      const response = await app.config.globalProperties.$http.get('/room/'+room_id);
+      const token = window.sessionStorage.getItem('token');
+      const response = await app.config.globalProperties.$http.get('/room/'+room_id, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
       // console.log(response);
       if (response.status === 200) {
         const data = await response.data;
