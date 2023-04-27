@@ -42,7 +42,7 @@
 
 
 ## TODO
-- [ ] 数据库事务
+- [x] 数据库事务
 - [ ] 引入Redis（在线用户列表、缓存聊天消息等）
 - [ ] grpc 远程调用（用在langchain）
 - [ ] websocket HTTPS

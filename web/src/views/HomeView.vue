@@ -49,10 +49,10 @@ export default {
           }
         });
 
-        console.log(res);
+        // console.log(res);
         if (res.status === 200) {
           const { data, user_info: userInfo } = res.data;
-          rooms.value = data;
+          rooms.value = data;  // 所有房间的id和人数
           user_info.value = userInfo;
         }
       } catch (error) {
@@ -61,7 +61,7 @@ export default {
     };
 
     const enterRoom = async (room_id) => {
-      console.log(room_id);
+      // console.log(room_id);
       await router.push({
         name: 'room',
         params: {
