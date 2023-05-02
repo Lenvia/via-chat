@@ -44,7 +44,6 @@
 ## TODO
 - [x] 数据库事务
 - [ ] 引入Redis（在线用户列表、缓存聊天消息等）
-- [ ] grpc 远程调用（用在langchain）
 - [ ] websocket HTTPS
 - [x] certificates （access GPT）
 - [x] JWT 替换 session （以去除同源访问）
@@ -54,5 +53,7 @@
 - [ ] 高并发测试
 - [ ] 撤回消息
 - [ ] 私聊
-- [ ] 分布式部署，kafka消息队列
+- [ ] 分布式部署，nginx，共享数据库，GRPC
+- [ ] kafka消息队列
 - [ ] 音频、图片、文件等多模态
+- [ ] langchain
