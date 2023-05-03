@@ -1,7 +1,10 @@
 # via-chat
 
-前后端分离的多人在线聊天室。
-基于 [go-gin-chat](https://github.com/hezhizheng/go-gin-chat) 进行修改。
+前后端分离的多人在线聊天室。基于 [go-gin-chat](https://github.com/hezhizheng/go-gin-chat) 进行修改。
+
+
+
+单机
 
 - 前后端通过 http 通信，使用 session 记录状态实现登录验证
 - 启用 websocket 实现双向通信及消息实时更新
@@ -11,6 +14,12 @@
 - ~~实现心跳检测机制，通过定时任务清理没有心跳的连接~~
 - 接入 ChatGPT，用户可以与 GPT 进行单轮互动
 - 实现前端和后端的 docker 部署，通过 docker-compose 自动编排
+
+
+
+分布式（请访问[via-chat-distributed](https://github.com/Lenvia/via-chat-distributed)）
+
+- 在云服务器注册 GPT 服务，本地通过 GRPC 调用
 
 
 
@@ -56,7 +65,7 @@
 - [ ] 分布式部署
   - [ ] nginx
   - [x] 远程数据库
-  - [ ] GRPC
+  - [x] GRPC
 - [ ] kafka消息队列
 - [ ] 音频、图片、文件等多模态
 - [ ] langchain
