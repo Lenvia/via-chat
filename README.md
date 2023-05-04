@@ -19,7 +19,8 @@
 
 分布式（请访问[via-chat-distributed](https://github.com/Lenvia/via-chat-distributed)）
 
-- 在云服务器注册 GPT 服务，本地通过 GRPC 调用
+- 多主机部署，使用 nginx 实现反向代理和负载均衡，连接云服务器数据库实现数据共享
+- 通过 GRPC 远程调用 ChatGPT 服务，消除了对本机代理的要求
 
 
 
@@ -62,8 +63,8 @@
 - [ ] 高并发测试
 - [ ] 撤回消息
 - [ ] 私聊
-- [ ] 分布式部署
-  - [ ] nginx
+- [x] 分布式部署
+  - [x] nginx
   - [x] 远程数据库
   - [x] GRPC
 - [ ] kafka消息队列

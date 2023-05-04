@@ -132,6 +132,8 @@ export default defineComponent({
           }
         })
 
+      console.log(host);
+
         ws = new WebSocket(`ws://${host}:8322/ws`); // 连接 WebSocket
         // console.log(ws)
 
