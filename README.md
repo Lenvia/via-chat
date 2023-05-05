@@ -4,8 +4,6 @@
 
 
 
-单机
-
 - 前后端通过 http 通信，使用 session 记录状态实现登录验证
 - 启用 websocket 实现双向通信及消息实时更新
 - 使用 goroutine 处理用户连接、离线、消息发送等各种事件
@@ -17,10 +15,7 @@
 
 
 
-分布式（请访问[via-chat-distributed](https://github.com/Lenvia/via-chat-distributed)）
-
-- 多主机部署，使用 nginx 实现反向代理和负载均衡，连接云服务器数据库实现数据共享
-- 通过 GRPC 远程调用 ChatGPT 服务，消除了对本机代理的要求
+分布式版本请访问 [via-chat-distributed](https://github.com/Lenvia/via-chat-distributed)
 
 
 
@@ -56,17 +51,12 @@
 - [ ] 引入Redis（在线用户列表、缓存聊天消息等）
 - [ ] websocket HTTPS
 - [x] certificates （access GPT）
-- [x] JWT 替换 session （以去除同源访问）
+- [x] JWT 替换 session
 - [ ] 心跳检测
 - [x] bcrypt 替换 md5
 - [x] Gorm add 重构（map to model）
 - [ ] 高并发测试
 - [ ] 撤回消息
 - [ ] 私聊
-- [x] 分布式部署
-  - [x] nginx
-  - [x] 远程数据库
-  - [x] GRPC
-- [ ] kafka消息队列
 - [ ] 音频、图片、文件等多模态
 - [ ] langchain
