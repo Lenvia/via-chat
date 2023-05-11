@@ -4,8 +4,8 @@
       <div v-for="msg in msgList" :key="msg.id" :class="msg.type === 'system' ? 'system-info' : getMessageClass(msg)">
 
         <div v-if="msg.type !== 'system'" :class="getUsernameClass(msg)">
+          <div class="message-time">{{ dateFormat(msg.created_at)}}</div>
           <div>{{ getUsername(msg) }}</div>
-          <!--<div class="message-time">{{ formatTime(msg.CreatedAt) }}</div>-->
         </div>
         <div>{{ msg.content }}</div>
       </div>
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, nextTick, watch} from 'vue';
+import {defineComponent, nextTick, onMounted, ref} from 'vue';
 import app from "@/main";
 import {ElMessage} from "element-plus";
 import router from "@/router";
@@ -93,8 +93,10 @@ export default defineComponent({
       if (response.status === 200) {
         const data = await response.data;
         userInfo.value = data.user_info;
-        if(data.msg_list !== null)  // 空消息不赋值
+        if(data.msg_list !== null) {  // 空消息不赋值
           msgList.value = data.msg_list;
+        }
+
         msgListCount.value = data.msg_list_count;
         
 
@@ -113,6 +115,17 @@ export default defineComponent({
       loadHistoryAndBuildWS();
       sendButton.value.addEventListener('click', handleClick); // 绑定按钮的点击事件
     });
+
+    function dateFormat(rawDate){
+      const date = new Date(Date.parse(rawDate));
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const hour = date.getHours();
+      const minute = date.getMinutes();
+      const second = date.getSeconds();
+      return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+    }
 
     function WebSocketConnect(userInfo, room_id, toUserInfo = null) {
         const host = window.location.hostname;
@@ -174,6 +187,7 @@ export default defineComponent({
               break;
             case 3:
               // 因为不是重新请求整个msgList，所以需要做一些小小的转换
+              // 这里 newMsg 的格式是和后端 models.Message 的格式一致
               newMsg = {
                 "avatar_id": received_msg.data.avatar_id,
                 "content": received_msg.data.content,
@@ -243,6 +257,7 @@ export default defineComponent({
       msgContainer,
       sendButton,
       sendContent,
+      dateFormat,
       handleEnter,
       getUsername,
       getMessageClass,
